@@ -48,6 +48,7 @@ private:
     void LoadPhotoBuff();
     void LoadPolicyBuff();
     void LoadMissionBuff();
+    void LoadJiaguoBuff();
     void LoadBuildingName();
     void LoadBuilding();
 
@@ -55,6 +56,7 @@ private:
     void LoadPhotoConfig();
     void LoadPolicyConfig();
     void LoadMissionConfig();
+    void LoadJiaguoConfig();
     void InitBuildingProfit();
 
     void AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId);
@@ -71,7 +73,8 @@ private:
     unordered_map<string, vector<pair<string, double> > > m_mapBuffStatus; //buff，属性ID->建筑ID->buff
     unordered_map<string, string> m_mapPhotoBuff; //照片buff，照片ID->buff
     unordered_map<string, vector<string> > m_mapPolicyBuff; //政策buff，政策ID->级别->buff
-    unordered_map<string, string> m_mapMissioBuff; //城市任务buff，城市任务ID->buff
+    unordered_map<string, string> m_mapMissionBuff; //城市任务buff，城市任务ID->buff
+    unordered_map<string, string> m_mapJiaguoBuff; //家国之光buff，家国之光等级->buff
     unordered_map<string, vector<string> > m_mapCategoryBuilding; //类别对应的建筑ID
     unordered_map<string, Building*> m_mapBuilding; //建筑列表，ID->建筑
     set<string> m_setValidBuilding; //可用建筑列表

@@ -77,6 +77,7 @@ void Config::LoadData()
     LoadPhotoBuff();
     LoadPolicyBuff();
     LoadMissionBuff();
+    LoadJiaguoBuff();
     LoadBuildingName();
     LoadBuilding();
 
@@ -84,6 +85,7 @@ void Config::LoadData()
     LoadPhotoConfig();
     LoadPolicyConfig();
     LoadMissionConfig();
+    LoadJiaguoConfig();
 
     InitBuildingProfit();
 }
@@ -241,7 +243,23 @@ void Config::LoadMissionBuff()
             string sMissionId = vField[0];
             string sBuffId = vField[1];
             cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
-            m_mapMissioBuff[sMissionId] = sBuffId;
+            m_mapMissionBuff[sMissionId] = sBuffId;
+        }
+    }
+}
+
+void Config::LoadJiaguoBuff()
+{
+    vector<vector<string> > vConfig = ParseConfig("data/JiaguoBuff.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 2)
+        {
+            string sLevelId = vField[0];
+            string sBuffId = vField[1];
+            cout << "sLevelId:" << sLevelId << ",sBuffId:" << sBuffId << endl;
+            m_mapJiaguoBuff[sLevelId] = sBuffId;
         }
     }
 }
@@ -510,10 +528,29 @@ void Config::LoadMissionConfig()
         {
             string sMissionId = vField[0];
             cout << "sMissionId:" << sMissionId << endl;
-            auto it = m_mapMissioBuff.find(sMissionId);
-            if (it != m_mapMissioBuff.end())
+            auto it = m_mapMissionBuff.find(sMissionId);
+            if (it != m_mapMissionBuff.end())
             {
                 AddMissionBuff(it->second);
+            }
+        }
+    }
+}
+
+void Config::LoadJiaguoConfig()
+{
+    vector<vector<string> > vConfig = ParseConfig("config/jiaguo.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 1)
+        {
+            string sLevelId = vField[0];
+            cout << "sLevelId:" << sLevelId << endl;
+            auto it = m_mapJiaguoBuff.find(sLevelId);
+            if (it != m_mapJiaguoBuff.end())
+            {
+                AddPolicyBuff(it->second);
             }
         }
     }
