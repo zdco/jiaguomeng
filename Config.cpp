@@ -37,13 +37,46 @@ void Config::ClearBuilding()
     m_mapBuilding.clear();
 }
 
+vector<string> Config::SepStr(const string sStr, const string &sSep)
+{
+    vector<string> vResult;
+    string strTemp = sStr;
+    size_t nPos = strTemp.find(sSep);
+    while (nPos != string::npos)
+    {
+        vResult.push_back(strTemp.substr(0, nPos));
+        strTemp = strTemp.substr(nPos + sSep.length());
+        nPos = strTemp.find(sSep);
+    }
+    vResult.push_back(strTemp);
+    return vResult;
+}
+
+vector<vector<string> > Config::ParseConfig(const string &configFile)
+{
+    vector<vector<string> > vConfig;
+    ifstream ifs(configFile);
+    string sLine;
+    getline(ifs, sLine); //跳过第一行表头
+    while (getline(ifs, sLine))
+    {
+        if (!sLine.empty())
+        {
+            vector<string> vField = SepStr(sLine, ",");
+            vConfig.push_back(vField);
+        }
+    }
+    return vConfig;
+}
+
 void Config::LoadData()
 {
     LoadBuildingUpgrade();
     LoadBuffStatus();
     LoadBuildingName();
     LoadBuilding();
-    LoadConfig();
+    LoadPhotoConfig();
+    LoadBuildingConfig();
 }
 
 Building* Config::GetBuilding(const string &sBuildingId)
@@ -54,11 +87,6 @@ Building* Config::GetBuilding(const string &sBuildingId)
         return it->second;
     }
     return NULL;
-}
-
-unordered_map<string, Building*> Config::GetBuilding()
-{
-    return m_mapBuilding;
 }
 
 unordered_map<string, Building*> Config::GetCategoryBuilding(const string &sCategory)
@@ -79,30 +107,12 @@ unordered_map<string, Building*> Config::GetCategoryBuilding(const string &sCate
     return mapBuilding;
 }
 
-vector<string> Config::SepStr(const string sStr, const string &sSep)
-{
-    vector<string> vResult;
-    string strTemp = sStr;
-    size_t nPos = strTemp.find(sSep);
-    while (nPos != string::npos)
-    {
-        vResult.push_back(strTemp.substr(0, nPos));
-        strTemp = strTemp.substr(nPos + sSep.length());
-        nPos = strTemp.find(sSep);
-    }
-    vResult.push_back(strTemp);
-    return vResult;
-}
-
 void Config::LoadBuildingUpgrade()
 {
-    string sLine;
-    ifstream ifs("data/BuildingUpgrade.csv");
-    getline(ifs, sLine); //跳过第一行表头
-    cout << sLine << endl;
-    while (getline(ifs, sLine))
+    vector<vector<string> > vConfig = ParseConfig("data/BuildingUpgrade.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
     {
-        vector<string> vField = SepStr(sLine, ",");
+        const vector<string> &vField = vConfig[i];
         if (vField.size() >= 2)
         {
             int nLevel = atoi(vField[0].c_str());
@@ -118,13 +128,10 @@ void Config::LoadBuildingUpgrade()
 
 void Config::LoadBuffStatus()
 {
-    string sLine;
-    ifstream ifs("data/BuffStatus.csv");
-    getline(ifs, sLine); //跳过第一行表头
-    cout << sLine << endl;
-    while (getline(ifs, sLine))
+    vector<vector<string> > vConfig = ParseConfig("data/BuffStatus.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
     {
-        vector<string> vField = SepStr(sLine, ",");
+        const vector<string> &vField = vConfig[i];
         if (vField.size() >= 4)
         {
             string sAttrId = vField[0];
@@ -169,15 +176,28 @@ void Config::LoadBuffStatus()
     }
 }
 
+void Config::LoadPhotoBuff()
+{
+    vector<vector<string> > vConfig = ParseConfig("data/PhotoBuff.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 2)
+        {
+            string sPhotoId = vField[0];
+            string sEffectId = vField[1];
+            cout << "sPhotoId:" << sPhotoId << ",sEffectId:" << sEffectId << endl;
+            m_mapPhotoBuff[sPhotoId] = sEffectId;
+        }
+    }
+}
+
 void Config::LoadBuildingName()
 {
-    string sLine;
-    ifstream ifs("data/BuildingName.csv");
-    getline(ifs, sLine); //跳过第一行表头
-    cout << sLine << endl;
-    while (getline(ifs, sLine))
+    vector<vector<string> > vConfig = ParseConfig("data/BuildingName.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
     {
-        vector<string> vField = SepStr(sLine, ",");
+        const vector<string> &vField = vConfig[i];
         if (vField.size() >= 2)
         {
             string sBuildingId = vField[0];
@@ -196,13 +216,10 @@ void Config::LoadBuildingName()
 
 void Config::LoadBuilding()
 {
-    string sLine;
-    ifstream ifs("data/Building.csv");
-    getline(ifs, sLine); //跳过第一行表头
-    cout << sLine << endl;
-    while (getline(ifs, sLine))
+    vector<vector<string> > vConfig = ParseConfig("data/Building.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
     {
-        vector<string> vField = SepStr(sLine, ",");
+        const vector<string> &vField = vConfig[i];
         if (vField.size() >= 6)
         {
             string sStar = vField[0];
@@ -235,14 +252,55 @@ void Config::LoadBuilding()
     }
 }
 
-void Config::LoadConfig()
+void Config::AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
 {
-    string sLine;
-    ifstream ifs("config/config.csv");
-    getline(ifs, sLine); //跳过第一行表头
-    while (getline(ifs, sLine))
+    for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        vector<string> vField = SepStr(sLine, ",");
+        it->second->AddPhotoBuff(sCategory, nBuff);
+    }
+}
+
+void Config::LoadPhotoConfig()
+{
+    vector<vector<string> > vConfig = ParseConfig("config/photo.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 1)
+        {
+            string sPhotoId = vField[0];
+            auto it = m_mapPhotoBuff.find(sPhotoId);
+            if (it != m_mapPhotoBuff.end())
+            {
+                auto buff_it = m_mapBuffStatus.find(it->second);
+                if (buff_it != m_mapBuffStatus.end())
+                {
+                    const pair<string, double> &buff = buff_it->second;
+                    if (buff.first == CategoryAll
+                        || buff.first == CategoryOnline
+                        || buff.first == CategoryOffline)
+                    {
+                        AddPhotoBuff(m_mapBuilding, buff.first, buff.second * 100);
+                    }
+                    else if (buff.first == CategoryResidence
+                        || buff.first == CategoryBusiness
+                        || buff.first == CategoryIndustrial)
+                    {
+                        unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
+                        AddPhotoBuff(mapBuilding, CategoryAll, buff.second * 100);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Config::LoadBuildingConfig()
+{
+    vector<vector<string> > vConfig = ParseConfig("config/building.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
         if (vField.size() >= 4)
         {
             string sBuildingId = vField[0];
