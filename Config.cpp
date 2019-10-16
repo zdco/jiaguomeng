@@ -131,54 +131,64 @@ void Config::LoadBuildingUpgrade()
     }
 }
 
+void Config::AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId)
+{
+    if (sEffectId != "-1")
+    {
+        cout << "sBuffId:" << sBuffId << ",sEffectId:" << sEffectId << ",dEffectValue:" << dEffectValue << ",sTargetId:" << sTargetId << endl;
+        if (sTargetId == "-1")
+        {
+            m_mapBuffStatus[sBuffId].push_back(make_pair(CategorySupply, dEffectValue));
+        }
+        else if (sTargetId == "1")
+        {
+            if (sEffectId >= "11" && sEffectId <= "14")
+            {
+                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryAll, dEffectValue));
+            }
+            else if (sEffectId >= "21" && sEffectId <= "24")
+            {
+                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryOnline, dEffectValue));
+            }
+            else if (sEffectId >= "31" && sEffectId <= "34")
+            {
+                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryOffline, dEffectValue));
+            }
+        }
+        else if (sTargetId == "2")
+        {
+            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryResidence, dEffectValue));
+        }
+        else if (sTargetId == "3")
+        {
+            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryBusiness, dEffectValue));
+        }
+        else if (sTargetId == "4")
+        {
+            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryIndustrial, dEffectValue));
+        }
+        else
+        {
+            m_mapBuffStatus[sBuffId].push_back(make_pair(sTargetId, dEffectValue));
+        }
+    }
+}
+
 void Config::LoadBuffStatus()
 {
     vector<vector<string> > vConfig = ParseConfig("data/BuffStatus.csv");
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
-        if (vField.size() >= 4)
+        if (vField.size() >= 13)
         {
-            string sAttrId = vField[0];
-            string sEffectId = vField[1];
-            double dEffectValue = atof(vField[2].c_str());
-            string sTargetId = vField[3];
-            cout << "sAttrId:" << sAttrId << ",sEffectId:" << sEffectId << ",dEffectValue:" << dEffectValue << ",sTargetId:" << sTargetId << endl;
-
-            if (sTargetId == "-1")
+            string sBuffId = vField[0];
+            for (int j = 0; j < 1; j++)
             {
-                m_mapBuffStatus[sAttrId] = make_pair(CategorySupply, dEffectValue);
-            }
-            else if (sTargetId == "1")
-            {
-                if (sEffectId >= "11" && sEffectId <= "14")
-                {
-                    m_mapBuffStatus[sAttrId] = make_pair(CategoryAll, dEffectValue);
-                }
-                else if (sEffectId >= "21" && sEffectId <= "24")
-                {
-                    m_mapBuffStatus[sAttrId] = make_pair(CategoryOnline, dEffectValue);
-                }
-                else if (sEffectId >= "31" && sEffectId <= "34")
-                {
-                    m_mapBuffStatus[sAttrId] = make_pair(CategoryOffline, dEffectValue);
-                }
-            }
-            else if (sTargetId == "2")
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryResidence, dEffectValue);
-            }
-            else if (sTargetId == "3")
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryBusiness, dEffectValue);
-            }
-            else if (sTargetId == "4")
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryIndustrial, dEffectValue);
-            }
-            else
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(sTargetId, dEffectValue);
+                string sEffectId = vField[j + 1];
+                double dEffectValue = atof(vField[j + 2].c_str());
+                string sTargetId = vField[j + 3];
+                AddBuffStatus(sBuffId, sEffectId, dEffectValue, sTargetId);
             }
         }
     }
@@ -193,9 +203,9 @@ void Config::LoadPhotoBuff()
         if (vField.size() >= 2)
         {
             string sPhotoId = vField[0];
-            string sEffectId = vField[1];
-            cout << "sPhotoId:" << sPhotoId << ",sEffectId:" << sEffectId << endl;
-            m_mapPhotoBuff[sPhotoId] = sEffectId;
+            string sBuffId = vField[1];
+            cout << "sPhotoId:" << sPhotoId << ",sBuffId:" << sBuffId << endl;
+            m_mapPhotoBuff[sPhotoId] = sBuffId;
         }
     }
 }
@@ -209,9 +219,9 @@ void Config::LoadPolicyBuff()
         if (vField.size() >= 2)
         {
             string sPolicyId = vField[0];
-            string sEffectId = vField[1];
-            cout << "sPolicyId:" << sPolicyId << ",sEffectId:" << sEffectId << endl;
-            m_mapPolicyBuff[sPolicyId].push_back(sEffectId);
+            string sBuffId = vField[1];
+            cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
+            m_mapPolicyBuff[sPolicyId].push_back(sBuffId);
         }
     }
 }
@@ -253,17 +263,19 @@ void Config::LoadBuilding()
             double dProfit = atof(vField[4].c_str());
 
             vector<pair<string, double> > vBuff;
-            string sAttrId1 = vField[5];
-            if (sAttrId1 != "0")
+            for (int j = 0; j < 2; j++)
             {
-                vBuff.push_back(m_mapBuffStatus[sAttrId1]);
+                string sBuffId = vField[5 + j];
+                if (sBuffId != "0")
+                {
+                    auto it = m_mapBuffStatus.find(sBuffId);
+                    if (it != m_mapBuffStatus.end())
+                    {
+                        vBuff.insert(vBuff.end(), it->second.begin(), it->second.end());
+                    }
+                }
             }
-            string sAttrId2 = vField[6];
-            if (sAttrId2 != "0")
-            {
-                vBuff.push_back(m_mapBuffStatus[sAttrId2]);
-            }
-            cout << "sStar:" << sStar << ",sBuildingId:" << sBuildingId << ",sCategory:" << sCategory << ",dProfit:" << dProfit << ",sAttrId1:" << sAttrId1 << ",sAttrId2:" << sAttrId2 << endl;
+            cout << "sStar:" << sStar << ",sBuildingId:" << sBuildingId << ",sCategory:" << sCategory << ",dProfit:" << dProfit << endl;
 
             Building* building = GetBuilding(sBuildingId);
             if (building)
@@ -284,6 +296,32 @@ void Config::AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, c
     }
 }
 
+void Config::AddPhotoBuff(const string &sBuffId)
+{
+    auto buff_it = m_mapBuffStatus.find(sBuffId);
+    if (buff_it != m_mapBuffStatus.end())
+    {
+        const vector<pair<string, double> > &vBuff = buff_it->second;
+        for (size_t j = 0; j < vBuff.size(); j++)
+        {
+            const pair<string, double> &buff = vBuff[j];
+            if (buff.first == CategoryAll
+                || buff.first == CategoryOnline
+                || buff.first == CategoryOffline)
+            {
+                AddPhotoBuff(m_mapBuilding, buff.first, buff.second * 100);
+            }
+            else if (buff.first == CategoryResidence
+                || buff.first == CategoryBusiness
+                || buff.first == CategoryIndustrial)
+            {
+                unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
+                AddPhotoBuff(mapBuilding, CategoryAll, buff.second * 100);
+            }
+        }
+    }
+}
+
 void Config::LoadPhotoConfig()
 {
     vector<vector<string> > vConfig = ParseConfig("config/photo.csv");
@@ -296,24 +334,7 @@ void Config::LoadPhotoConfig()
             auto it = m_mapPhotoBuff.find(sPhotoId);
             if (it != m_mapPhotoBuff.end())
             {
-                auto buff_it = m_mapBuffStatus.find(it->second);
-                if (buff_it != m_mapBuffStatus.end())
-                {
-                    const pair<string, double> &buff = buff_it->second;
-                    if (buff.first == CategoryAll
-                        || buff.first == CategoryOnline
-                        || buff.first == CategoryOffline)
-                    {
-                        AddPhotoBuff(m_mapBuilding, buff.first, buff.second * 100);
-                    }
-                    else if (buff.first == CategoryResidence
-                        || buff.first == CategoryBusiness
-                        || buff.first == CategoryIndustrial)
-                    {
-                        unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
-                        AddPhotoBuff(mapBuilding, CategoryAll, buff.second * 100);
-                    }
-                }
+                AddPhotoBuff(it->second);
             }
         }
     }
@@ -327,24 +348,28 @@ void Config::AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, 
     }
 }
 
-void Config::AddPolicyBuff(const string &sEffectId)
+void Config::AddPolicyBuff(const string &sBuffId)
 {
-    auto buff_it = m_mapBuffStatus.find(sEffectId);
+    auto buff_it = m_mapBuffStatus.find(sBuffId);
     if (buff_it != m_mapBuffStatus.end())
     {
-        const pair<string, double> &buff = buff_it->second;
-        if (buff.first == CategoryAll
-            || buff.first == CategoryOnline
-            || buff.first == CategoryOffline)
+        const vector<pair<string, double> > &vBuff = buff_it->second;
+        for (size_t j = 0; j < vBuff.size(); j++)
         {
-            AddPolicyBuff(m_mapBuilding, buff.first, buff.second * 100);
-        }
-        else if (buff.first == CategoryResidence
-            || buff.first == CategoryBusiness
-            || buff.first == CategoryIndustrial)
-        {
-            unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
-            AddPolicyBuff(mapBuilding, CategoryAll, buff.second * 100);
+            const pair<string, double> &buff = vBuff[j];
+            if (buff.first == CategoryAll
+                || buff.first == CategoryOnline
+                || buff.first == CategoryOffline)
+            {
+                AddPolicyBuff(m_mapBuilding, buff.first, buff.second * 100);
+            }
+            else if (buff.first == CategoryResidence
+                || buff.first == CategoryBusiness
+                || buff.first == CategoryIndustrial)
+            {
+                unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
+                AddPolicyBuff(mapBuilding, CategoryAll, buff.second * 100);
+            }
         }
     }
 }
@@ -372,8 +397,8 @@ void Config::LoadPolicyConfig()
                 auto it = m_mapPolicyBuff.find(sPolicyId);
                 if (it != m_mapPolicyBuff.end() && it->second.size() >= nLevel)
                 {
-                    string sEffectId = it->second[nLevel - 1];
-                    AddPolicyBuff(sEffectId);
+                    string sBuffId = it->second[nLevel - 1];
+                    AddPolicyBuff(sBuffId);
                 }
             }
         }
@@ -384,8 +409,8 @@ void Config::LoadPolicyConfig()
     {
         if (it->first < sMinPolicyId)
         {
-            string sEffectId = it->second.back();
-            AddPolicyBuff(sEffectId);
+            string sBuffId = it->second.back();
+            AddPolicyBuff(sBuffId);
         }
     }
 }
