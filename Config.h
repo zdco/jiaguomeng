@@ -47,18 +47,23 @@ private:
     void LoadBuffStatus();
     void LoadPhotoBuff();
     void LoadPolicyBuff();
+    void LoadMissionBuff();
     void LoadBuildingName();
     void LoadBuilding();
 
+    void LoadBuildingConfig();
     void LoadPhotoConfig();
     void LoadPolicyConfig();
-    void LoadBuildingConfig();
+    void LoadMissionConfig();
+    void InitBuildingProfit();
 
     void AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId);
     void AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
     void AddPhotoBuff(const string &sBuffId);
     void AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
     void AddPolicyBuff(const string &sBuffId);
+    void AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
+    void AddMissionBuff(const string &sBuffId);
 
 private:
     static Config* m_instance;
@@ -66,6 +71,7 @@ private:
     unordered_map<string, vector<pair<string, double> > > m_mapBuffStatus; //buff，属性ID->建筑ID->buff
     unordered_map<string, string> m_mapPhotoBuff; //照片buff，照片ID->buff
     unordered_map<string, vector<string> > m_mapPolicyBuff; //政策buff，政策ID->级别->buff
+    unordered_map<string, string> m_mapMissioBuff; //城市任务buff，城市任务ID->buff
     unordered_map<string, vector<string> > m_mapCategoryBuilding; //类别对应的建筑ID
     unordered_map<string, Building*> m_mapBuilding; //建筑列表，ID->建筑
     set<string> m_setValidBuilding; //可用建筑列表

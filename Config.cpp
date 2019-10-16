@@ -76,12 +76,16 @@ void Config::LoadData()
     LoadBuffStatus();
     LoadPhotoBuff();
     LoadPolicyBuff();
+    LoadMissionBuff();
     LoadBuildingName();
     LoadBuilding();
 
+    LoadBuildingConfig();
     LoadPhotoConfig();
     LoadPolicyConfig();
-    LoadBuildingConfig();
+    LoadMissionConfig();
+
+    InitBuildingProfit();
 }
 
 Building* Config::GetBuilding(const string &sBuildingId)
@@ -183,7 +187,7 @@ void Config::LoadBuffStatus()
         if (vField.size() >= 13)
         {
             string sBuffId = vField[0];
-            for (int j = 0; j < 1; j++)
+            for (int j = 0; j < 3; j++)
             {
                 string sEffectId = vField[j + 1];
                 double dEffectValue = atof(vField[j + 2].c_str());
@@ -222,6 +226,22 @@ void Config::LoadPolicyBuff()
             string sBuffId = vField[1];
             cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
             m_mapPolicyBuff[sPolicyId].push_back(sBuffId);
+        }
+    }
+}
+
+void Config::LoadMissionBuff()
+{
+    vector<vector<string> > vConfig = ParseConfig("data/MissionBuff.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 2)
+        {
+            string sMissionId = vField[0];
+            string sBuffId = vField[1];
+            cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
+            m_mapMissioBuff[sMissionId] = sBuffId;
         }
     }
 }
@@ -283,6 +303,29 @@ void Config::LoadBuilding()
                 building->AddStarProfit(sStar, dProfit);
                 building->AddStarBuff(sStar, vBuff);
                 m_mapCategoryBuilding[sCategory].push_back(sBuildingId);
+            }
+        }
+    }
+}
+
+void Config::LoadBuildingConfig()
+{
+    vector<vector<string> > vConfig = ParseConfig("config/building.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 4)
+        {
+            string sBuildingId = vField[0];
+            string sStar = vField[1];
+            int nLevel = atoi(vField[2].c_str());
+            bool bValid = atoi(vField[3].c_str());
+            Building* building = GetBuilding(sBuildingId);
+            if (bValid && building)
+            {
+                m_setValidBuilding.insert(sBuildingId);
+                building->SetStar(sStar);
+                building->SetLevel(nLevel);
             }
         }
     }
@@ -415,27 +458,72 @@ void Config::LoadPolicyConfig()
     }
 }
 
-void Config::LoadBuildingConfig()
+void Config::AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
 {
-    vector<vector<string> > vConfig = ParseConfig("config/building.csv");
+    for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
+    {
+        it->second->AddMissionBuff(sCategory, nBuff);
+    }
+}
+
+void Config::AddMissionBuff(const string &sBuffId)
+{
+    auto buff_it = m_mapBuffStatus.find(sBuffId);
+    if (buff_it != m_mapBuffStatus.end())
+    {
+        const vector<pair<string, double> > &vBuff = buff_it->second;
+        for (size_t j = 0; j < vBuff.size(); j++)
+        {
+            const pair<string, double> &buff = vBuff[j];
+            if (buff.first == CategoryAll
+                || buff.first == CategoryOnline
+                || buff.first == CategoryOffline)
+            {
+                AddMissionBuff(m_mapBuilding, buff.first, buff.second * 100);
+            }
+            else if (buff.first == CategoryResidence
+                || buff.first == CategoryBusiness
+                || buff.first == CategoryIndustrial)
+            {
+                unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
+                AddMissionBuff(mapBuilding, CategoryAll, buff.second * 100);
+            }
+            else
+            {
+                Building* building = GetBuilding(buff.first);
+                if (building)
+                {
+                    building->AddMissionBuff(CategoryAll, buff.second * 100);
+                }
+            }
+        }
+    }
+}
+
+void Config::LoadMissionConfig()
+{
+    vector<vector<string> > vConfig = ParseConfig("config/mission.csv");
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
-        if (vField.size() >= 4)
+        if (vField.size() >= 1)
         {
-            string sBuildingId = vField[0];
-            string sStar = vField[1];
-            int nLevel = atoi(vField[2].c_str());
-            bool bValid = atoi(vField[3].c_str());
-            Building* building = GetBuilding(sBuildingId);
-            if (bValid && building)
+            string sMissionId = vField[0];
+            cout << "sMissionId:" << sMissionId << endl;
+            auto it = m_mapMissioBuff.find(sMissionId);
+            if (it != m_mapMissioBuff.end())
             {
-                m_setValidBuilding.insert(sBuildingId);
-                building->SetStar(sStar);
-                building->SetLevel(nLevel);
-                building->InitProfit();
+                AddMissionBuff(it->second);
             }
         }
+    }
+}
+
+void Config::InitBuildingProfit()
+{
+    for (auto it = m_mapBuilding.begin(); it != m_mapBuilding.end(); it++)
+    {
+        it->second->InitProfit();
     }
 }
 
