@@ -60,7 +60,7 @@ void AddTargetBuff(const string &sTargetId, const unordered_map<string, Building
 
 void PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding)
 {
-    for (auto it = mapResidence.begin(); it != mapResidence.end(); it++)
+    for (auto it = mapAllBuilding.begin(); it != mapAllBuilding.end(); it++)
     {
         vector<pair<string, double> > vStarBuff = it->second->GetStarBuff();
         for (size_t j = 0; j < vStarBuff.size(); j++)
