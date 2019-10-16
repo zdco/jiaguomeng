@@ -46,11 +46,15 @@ private:
     void LoadBuildingUpgrade();
     void LoadBuffStatus();
     void LoadPhotoBuff();
+    void LoadPolicyBuff();
     void LoadBuildingName();
     void LoadBuilding();
 
     void AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
     void LoadPhotoConfig();
+    void AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
+    void AddPolicyBuff(const string &sEffectId);
+    void LoadPolicyConfig();
     void LoadBuildingConfig();
 
 private:
@@ -58,6 +62,7 @@ private:
     unordered_map<int, double> m_mapLevelProfit; //等级对应收益
     unordered_map<string, pair<string, double> > m_mapBuffStatus; //buff，属性ID->建筑ID->buff
     unordered_map<string, string> m_mapPhotoBuff; //照片buff，照片ID->buff
+    unordered_map<string, vector<string> > m_mapPolicyBuff; //政策buff，政策ID->级别->buff
     unordered_map<string, vector<string> > m_mapCategoryBuilding; //类别对应的建筑ID
     unordered_map<string, Building*> m_mapBuilding; //建筑列表，ID->建筑
     set<string> m_setValidBuilding; //可用建筑列表

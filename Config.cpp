@@ -60,6 +60,7 @@ vector<vector<string> > Config::ParseConfig(const string &configFile)
     getline(ifs, sLine); //跳过第一行表头
     while (getline(ifs, sLine))
     {
+        sLine = sLine.substr(0, sLine.find_last_of('\r'));
         if (!sLine.empty())
         {
             vector<string> vField = SepStr(sLine, ",");
@@ -73,9 +74,13 @@ void Config::LoadData()
 {
     LoadBuildingUpgrade();
     LoadBuffStatus();
+    LoadPhotoBuff();
+    LoadPolicyBuff();
     LoadBuildingName();
     LoadBuilding();
+
     LoadPhotoConfig();
+    LoadPolicyConfig();
     LoadBuildingConfig();
 }
 
@@ -192,6 +197,22 @@ void Config::LoadPhotoBuff()
     }
 }
 
+void Config::LoadPolicyBuff()
+{
+    vector<vector<string> > vConfig = ParseConfig("data/PolicyBuff.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 2)
+        {
+            string sPolicyId = vField[0];
+            string sEffectId = vField[1];
+            cout << "sPolicyId:" << sPolicyId << ",sEffectId:" << sEffectId << endl;
+            m_mapPolicyBuff[sPolicyId].push_back(sEffectId);
+        }
+    }
+}
+
 void Config::LoadBuildingName()
 {
     vector<vector<string> > vConfig = ParseConfig("data/BuildingName.csv");
@@ -291,6 +312,77 @@ void Config::LoadPhotoConfig()
                     }
                 }
             }
+        }
+    }
+}
+
+void Config::AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
+{
+    for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
+    {
+        it->second->AddPolicyBuff(sCategory, nBuff);
+    }
+}
+
+void Config::AddPolicyBuff(const string &sEffectId)
+{
+    auto buff_it = m_mapBuffStatus.find(sEffectId);
+    if (buff_it != m_mapBuffStatus.end())
+    {
+        const pair<string, double> &buff = buff_it->second;
+        if (buff.first == CategoryAll
+            || buff.first == CategoryOnline
+            || buff.first == CategoryOffline)
+        {
+            AddPolicyBuff(m_mapBuilding, buff.first, buff.second * 100);
+        }
+        else if (buff.first == CategoryResidence
+            || buff.first == CategoryBusiness
+            || buff.first == CategoryIndustrial)
+        {
+            unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
+            AddPolicyBuff(mapBuilding, CategoryAll, buff.second * 100);
+        }
+    }
+}
+
+void Config::LoadPolicyConfig()
+{
+    string sMinPolicyId;
+    vector<vector<string> > vConfig = ParseConfig("config/policy.csv");
+    for (size_t i = 0; i < vConfig.size(); i++)
+    {
+        const vector<string> &vField = vConfig[i];
+        if (vField.size() >= 2)
+        {
+            string sPolicyId = vField[0];
+            int nLevel = atoi(vField[1].c_str());
+            cout << "sPolicyId:" << sPolicyId << ",nLevel:" << nLevel << endl;
+
+            if (sMinPolicyId.empty() || sMinPolicyId > sPolicyId)
+            {
+                sMinPolicyId = sPolicyId;
+            }
+
+            if (nLevel > 0)
+            {
+                auto it = m_mapPolicyBuff.find(sPolicyId);
+                if (it != m_mapPolicyBuff.end() && it->second.size() >= nLevel)
+                {
+                    string sEffectId = it->second[nLevel - 1];
+                    AddPolicyBuff(sEffectId);
+                }
+            }
+        }
+    }
+
+    //叠加该阶段之前的所有政策buff
+    for (auto it = m_mapPolicyBuff.begin(); it != m_mapPolicyBuff.end(); it++)
+    {
+        if (it->first < sMinPolicyId)
+        {
+            string sEffectId = it->second.back();
+            AddPolicyBuff(sEffectId);
         }
     }
 }
