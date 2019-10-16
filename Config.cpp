@@ -149,17 +149,20 @@ void Config::LoadBuffStatus()
             {
                 m_mapBuffStatus[sAttrId] = make_pair(CategorySupply, dEffectValue);
             }
-            else if (sTargetId == "1" && sEffectId == "11")
+            else if (sTargetId == "1")
             {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryAll, dEffectValue);
-            }
-            else if (sTargetId == "1" && sEffectId == "21")
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryOnline, dEffectValue);
-            }
-            else if (sTargetId == "1" && sEffectId == "31")
-            {
-                m_mapBuffStatus[sAttrId] = make_pair(CategoryOffline, dEffectValue);
+                if (sEffectId >= "11" && sEffectId <= "14")
+                {
+                    m_mapBuffStatus[sAttrId] = make_pair(CategoryAll, dEffectValue);
+                }
+                else if (sEffectId >= "21" && sEffectId <= "24")
+                {
+                    m_mapBuffStatus[sAttrId] = make_pair(CategoryOnline, dEffectValue);
+                }
+                else if (sEffectId >= "31" && sEffectId <= "34")
+                {
+                    m_mapBuffStatus[sAttrId] = make_pair(CategoryOffline, dEffectValue);
+                }
             }
             else if (sTargetId == "2")
             {
