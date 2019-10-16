@@ -4,6 +4,9 @@
 Building::Building(const string &sName)
     : m_sName(sName)
 {
+    m_dOnlineProfit = 0;
+    m_dOfflineProfit = 0;
+
     m_nPolicyBuffAll = 0;
     m_nPolicyBuffOnline = 0;
     m_nPolicyBuffOffline = 0;
@@ -42,10 +45,10 @@ void Building::SetStar(string sStar)
 
 void Building::InitProfit()
 {
-    m_dOnlineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOnline) / 100)
-        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOnline) / 100) * (1 + (m_nMissionBuffAll + m_nMissionBuffOnline) / 100);
-    m_dOfflineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOffline) / 100)
-        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOffline) / 100) * (1 + (m_nMissionBuffAll + m_nMissionBuffOffline) / 100);
+    m_dOnlineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOnline) / 100.0)
+        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOnline) / 100.0) * (1 + (m_nMissionBuffAll + m_nMissionBuffOnline) / 100.0);
+    m_dOfflineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOffline) / 100.0)
+        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOffline) / 100.0) * (1 + (m_nMissionBuffAll + m_nMissionBuffOffline) / 100.0);
 }
 
 void Building::AddPolicyBuff(const string &sCategory, int nBuff)
