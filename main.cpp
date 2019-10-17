@@ -13,7 +13,7 @@ vector<unordered_map<string, Building*> > GetComb(const unordered_map<string, Bu
         vData.push_back(make_pair(it->first, it->second));
     }
 
-    if (vData.size() >= 3)
+    if (vData.size() > 3)
     {
         for (size_t i = 0; i < vData.size() - 2; i++)
         {
@@ -30,6 +30,11 @@ vector<unordered_map<string, Building*> > GetComb(const unordered_map<string, Bu
             }
         }
     }
+    else
+    {
+        vOut.push_back(mapData);
+    }
+    
     return vOut;
 }
 
