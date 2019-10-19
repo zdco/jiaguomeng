@@ -128,10 +128,10 @@ void Config::LoadBuildingUpgrade()
         {
             int nLevel = atoi(vField[0].c_str());
             double dProfit = atof(vField[1].c_str());
-            streamsize csize = cout.precision();
-            cout.precision(numeric_limits<double>::digits10);
-            cout << "nLevel:" << nLevel << ",dProfit:" << dProfit << endl;
-            cout.precision(csize);
+            // streamsize csize = cout.precision();
+            // cout.precision(numeric_limits<double>::digits10);
+            // cout << "nLevel:" << nLevel << ",dProfit:" << dProfit << endl;
+            // cout.precision(csize);
             m_mapLevelProfit[nLevel] = dProfit;
         }
     }
@@ -141,7 +141,7 @@ void Config::AddBuffStatus(const string &sBuffId, const string &sEffectId, doubl
 {
     if (sEffectId != "-1")
     {
-        cout << "sBuffId:" << sBuffId << ",sEffectId:" << sEffectId << ",dEffectValue:" << dEffectValue << ",sTargetId:" << sTargetId << endl;
+        //cout << "sBuffId:" << sBuffId << ",sEffectId:" << sEffectId << ",dEffectValue:" << dEffectValue << ",sTargetId:" << sTargetId << endl;
         if (sTargetId == "-1")
         {
             m_mapBuffStatus[sBuffId].push_back(make_pair(CategorySupply, dEffectValue));
@@ -189,7 +189,7 @@ void Config::LoadBuffStatus()
         if (vField.size() >= 13)
         {
             string sBuffId = vField[0];
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j=j+3)
             {
                 string sEffectId = vField[j + 1];
                 double dEffectValue = atof(vField[j + 2].c_str());
@@ -210,7 +210,7 @@ void Config::LoadPhotoBuff()
         {
             string sPhotoId = vField[0];
             string sBuffId = vField[1];
-            cout << "sPhotoId:" << sPhotoId << ",sBuffId:" << sBuffId << endl;
+            //cout << "sPhotoId:" << sPhotoId << ",sBuffId:" << sBuffId << endl;
             m_mapPhotoBuff[sPhotoId] = sBuffId;
         }
     }
@@ -226,7 +226,7 @@ void Config::LoadPolicyBuff()
         {
             string sPolicyId = vField[0];
             string sBuffId = vField[1];
-            cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
+            //cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
             m_mapPolicyBuff[sPolicyId].push_back(sBuffId);
         }
     }
@@ -242,7 +242,7 @@ void Config::LoadMissionBuff()
         {
             string sMissionId = vField[0];
             string sBuffId = vField[1];
-            cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
+            //cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
             m_mapMissionBuff[sMissionId] = sBuffId;
         }
     }
@@ -258,7 +258,7 @@ void Config::LoadJiaguoBuff()
         {
             string sLevelId = vField[0];
             string sBuffId = vField[1];
-            cout << "sLevelId:" << sLevelId << ",sBuffId:" << sBuffId << endl;
+            //cout << "sLevelId:" << sLevelId << ",sBuffId:" << sBuffId << endl;
             m_mapJiaguoBuff[sLevelId] = sBuffId;
         }
     }
@@ -274,7 +274,7 @@ void Config::LoadBuildingName()
         {
             string sBuildingId = vField[0];
             string sName = vField[1];
-            cout << "sBuildingId:" << sBuildingId << ",sName:" << sName << endl;
+            //cout << "sBuildingId:" << sBuildingId << ",sName:" << sName << endl;
 
             Building* building = GetBuilding(sBuildingId);
             if (building == NULL)
@@ -313,7 +313,7 @@ void Config::LoadBuilding()
                     }
                 }
             }
-            cout << "sStar:" << sStar << ",sBuildingId:" << sBuildingId << ",sCategory:" << sCategory << ",dProfit:" << dProfit << endl;
+            //cout << "sStar:" << sStar << ",sBuildingId:" << sBuildingId << ",sCategory:" << sCategory << ",dProfit:" << dProfit << endl;
 
             Building* building = GetBuilding(sBuildingId);
             if (building)
@@ -349,11 +349,11 @@ void Config::LoadBuildingConfig()
     }
 }
 
-void Config::AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
+void Config::AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff)
 {
     for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        it->second->AddPhotoBuff(sCategory, nBuff);
+        it->second->AddPhotoBuff(sCategory, dBuff);
     }
 }
 
@@ -370,14 +370,14 @@ void Config::AddPhotoBuff(const string &sBuffId)
                 || buff.first == CategoryOnline
                 || buff.first == CategoryOffline)
             {
-                AddPhotoBuff(m_mapBuilding, buff.first, buff.second * 100);
+                AddPhotoBuff(m_mapBuilding, buff.first, buff.second);
             }
             else if (buff.first == CategoryResidence
                 || buff.first == CategoryBusiness
                 || buff.first == CategoryIndustrial)
             {
                 unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
-                AddPhotoBuff(mapBuilding, CategoryAll, buff.second * 100);
+                AddPhotoBuff(mapBuilding, CategoryAll, buff.second);
             }
         }
     }
@@ -401,11 +401,11 @@ void Config::LoadPhotoConfig()
     }
 }
 
-void Config::AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
+void Config::AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff)
 {
     for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        it->second->AddPolicyBuff(sCategory, nBuff);
+        it->second->AddPolicyBuff(sCategory, dBuff);
     }
 }
 
@@ -422,14 +422,14 @@ void Config::AddPolicyBuff(const string &sBuffId)
                 || buff.first == CategoryOnline
                 || buff.first == CategoryOffline)
             {
-                AddPolicyBuff(m_mapBuilding, buff.first, buff.second * 100);
+                AddPolicyBuff(m_mapBuilding, buff.first, buff.second);
             }
             else if (buff.first == CategoryResidence
                 || buff.first == CategoryBusiness
                 || buff.first == CategoryIndustrial)
             {
                 unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
-                AddPolicyBuff(mapBuilding, CategoryAll, buff.second * 100);
+                AddPolicyBuff(mapBuilding, CategoryAll, buff.second);
             }
         }
     }
@@ -446,7 +446,7 @@ void Config::LoadPolicyConfig()
         {
             string sPolicyId = vField[0];
             int nLevel = atoi(vField[1].c_str());
-            cout << "sPolicyId:" << sPolicyId << ",nLevel:" << nLevel << endl;
+            //cout << "sPolicyId:" << sPolicyId << ",nLevel:" << nLevel << endl;
 
             if (sMinPolicyId.empty() || sMinPolicyId > sPolicyId)
             {
@@ -476,11 +476,11 @@ void Config::LoadPolicyConfig()
     }
 }
 
-void Config::AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff)
+void Config::AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff)
 {
     for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        it->second->AddMissionBuff(sCategory, nBuff);
+        it->second->AddMissionBuff(sCategory, dBuff);
     }
 }
 
@@ -497,21 +497,21 @@ void Config::AddMissionBuff(const string &sBuffId)
                 || buff.first == CategoryOnline
                 || buff.first == CategoryOffline)
             {
-                AddMissionBuff(m_mapBuilding, buff.first, buff.second * 100);
+                AddMissionBuff(m_mapBuilding, buff.first, buff.second);
             }
             else if (buff.first == CategoryResidence
                 || buff.first == CategoryBusiness
                 || buff.first == CategoryIndustrial)
             {
                 unordered_map<string, Building*> mapBuilding = GetCategoryBuilding(buff.first);
-                AddMissionBuff(mapBuilding, CategoryAll, buff.second * 100);
+                AddMissionBuff(mapBuilding, CategoryAll, buff.second);
             }
             else
             {
                 Building* building = GetBuilding(buff.first);
                 if (building)
                 {
-                    building->AddMissionBuff(CategoryAll, buff.second * 100);
+                    building->AddMissionBuff(CategoryAll, buff.second);
                 }
             }
         }
@@ -527,7 +527,7 @@ void Config::LoadMissionConfig()
         if (vField.size() >= 1)
         {
             string sMissionId = vField[0];
-            cout << "sMissionId:" << sMissionId << endl;
+            //cout << "sMissionId:" << sMissionId << endl;
             auto it = m_mapMissionBuff.find(sMissionId);
             if (it != m_mapMissionBuff.end())
             {
@@ -546,7 +546,7 @@ void Config::LoadJiaguoConfig()
         if (vField.size() >= 1)
         {
             string sLevelId = vField[0];
-            cout << "sLevelId:" << sLevelId << endl;
+            //cout << "sLevelId:" << sLevelId << endl;
             auto it = m_mapJiaguoBuff.find(sLevelId);
             if (it != m_mapJiaguoBuff.end())
             {

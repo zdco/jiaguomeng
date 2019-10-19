@@ -127,7 +127,8 @@ void ShowResult(const multimap<double, unordered_map<string, double> > &mapTotal
             Building* building = Config::GetInstance()->GetBuilding(data_it->first);
             if (building)
             {
-                cout << data_it->first << "(" << building->GetName() << "):" << data_it->second << endl;
+                double baseProfit = building->GetBaseProfit();
+                cout << data_it->first << "(" << building->GetName() << "):" << data_it->second << "(" << baseProfit << "+" << data_it->second - baseProfit << ")" << endl;
             }
         }
     }

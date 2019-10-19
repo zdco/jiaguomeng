@@ -18,14 +18,16 @@ public:
     void SetStar(string sStar);
     void InitProfit();
 
-    void AddPolicyBuff(const string &sCategory, int nBuff);
-    void AddPhotoBuff(const string &sCategory, int nBuff);
-    void AddMissionBuff(const string &sCategory, int nBuff);
+    void AddPolicyBuff(const string &sCategory, double dBuff);
+    void AddPhotoBuff(const string &sCategory, double dBuff);
+    void AddMissionBuff(const string &sCategory, double dBuff);
 
-    void AddAdditionBuff(const string &sCategory, int nBuff);
+    void AddAdditionBuff(const string &sCategory, double dBuff);
     void ResetAdditionBuff();
 
     vector<pair<string, double> > GetStarBuff();
+    //获取基础收益
+    double GetBaseProfit();
     //获取总收益
     double GetTotalProfit(const string &sCategory);
     string GetName();
@@ -40,24 +42,24 @@ private:
     double m_dOfflineProfit;
 
     //政策buff
-    int m_nPolicyBuffAll;
-    int m_nPolicyBuffOnline;
-    int m_nPolicyBuffOffline;
+    double m_dPolicyBuffAll;
+    double m_dPolicyBuffOnline;
+    double m_dPolicyBuffOffline;
 
     //照片buff
-    int m_nPhotoBuffAll;
-    int m_nPhotoBuffOnline;
-    int m_nPhotoBuffOffline;
+    double m_dPhotoBuffAll;
+    double m_dPhotoBuffOnline;
+    double m_dPhotoBuffOffline;
 
     //城市任务buff
-    int m_nMissionBuffAll;
-    int m_nMissionBuffOnline;
-    int m_nMissionBuffOffline;
+    double m_dMissionBuffAll;
+    double m_dMissionBuffOnline;
+    double m_dMissionBuffOffline;
 
     //建筑加成buff，按其它建筑星级对应
-    int m_nAdditionBuffAll;
-    int m_nAdditionBuffOnline;
-    int m_nAdditionBuffOffline;
+    double m_dAdditionBuffAll;
+    double m_dAdditionBuffOnline;
+    double m_dAdditionBuffOffline;
 
     unordered_map<string, vector<pair<string, double> > > m_mapStarBuff; //建筑星级加成其它建筑buff，星级->其它建筑->buff
     unordered_map<string, double> m_mapStarProfit; //建筑星级收入，星级->收益

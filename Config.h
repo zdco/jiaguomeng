@@ -60,11 +60,11 @@ private:
     void InitBuildingProfit();
 
     void AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId);
-    void AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
+    void AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
     void AddPhotoBuff(const string &sBuffId);
-    void AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
+    void AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
     void AddPolicyBuff(const string &sBuffId);
-    void AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, int nBuff);
+    void AddMissionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
     void AddMissionBuff(const string &sBuffId);
 
 private:

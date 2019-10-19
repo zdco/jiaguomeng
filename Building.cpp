@@ -4,20 +4,22 @@
 Building::Building(const string &sName)
     : m_sName(sName)
 {
+    m_dLevelProfit = 0;
+    m_starProfit = 0;
     m_dOnlineProfit = 0;
     m_dOfflineProfit = 0;
 
-    m_nPolicyBuffAll = 0;
-    m_nPolicyBuffOnline = 0;
-    m_nPolicyBuffOffline = 0;
+    m_dPolicyBuffAll = 0;
+    m_dPolicyBuffOnline = 0;
+    m_dPolicyBuffOffline = 0;
 
-    m_nPhotoBuffAll = 0;
-    m_nPhotoBuffOnline = 0;
-    m_nPhotoBuffOffline = 0;
+    m_dPhotoBuffAll = 0;
+    m_dPhotoBuffOnline = 0;
+    m_dPhotoBuffOffline = 0;
 
-    m_nMissionBuffAll = 0;
-    m_nMissionBuffOnline = 0;
-    m_nMissionBuffOffline = 0;
+    m_dMissionBuffAll = 0;
+    m_dMissionBuffOnline = 0;
+    m_dMissionBuffOffline = 0;
 
     ResetAdditionBuff();
 }
@@ -45,81 +47,81 @@ void Building::SetStar(string sStar)
 
 void Building::InitProfit()
 {
-    m_dOnlineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOnline) / 100.0)
-        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOnline) / 100.0) * (1 + (m_nMissionBuffAll + m_nMissionBuffOnline) / 100.0);
-    m_dOfflineProfit = m_dLevelProfit * m_starProfit * (1 + (m_nPolicyBuffAll + m_nPolicyBuffOffline) / 100.0)
-        * (1 + (m_nPhotoBuffAll + m_nPhotoBuffOffline) / 100.0) * (1 + (m_nMissionBuffAll + m_nMissionBuffOffline) / 100.0);
+    m_dOnlineProfit = m_dLevelProfit * m_starProfit * (1 + m_dPolicyBuffAll + m_dPolicyBuffOnline)
+        * (1 + m_dPhotoBuffAll + m_dPhotoBuffOnline) * (1 + m_dMissionBuffAll + m_dMissionBuffOnline);
+    m_dOfflineProfit = m_dLevelProfit * m_starProfit * (1 + m_dPolicyBuffAll + m_dPolicyBuffOffline)
+        * (1 + m_dPhotoBuffAll + m_dPhotoBuffOffline) * (1 + m_dMissionBuffAll + m_dMissionBuffOffline);
 }
 
-void Building::AddPolicyBuff(const string &sCategory, int nBuff)
+void Building::AddPolicyBuff(const string &sCategory, double dBuff)
 {
     if (sCategory == CategoryAll)
     {
-        m_nPolicyBuffAll += nBuff;
+        m_dPolicyBuffAll += dBuff;
     }
     else if (sCategory == CategoryOnline)
     {
-        m_nPolicyBuffOnline += nBuff;
+        m_dPolicyBuffOnline += dBuff;
     }
     else if (sCategory == CategoryOffline)
     {
-        m_nPolicyBuffOffline += nBuff;
+        m_dPolicyBuffOffline += dBuff;
     }
 }
 
-void Building::AddPhotoBuff(const string &sCategory, int nBuff)
+void Building::AddPhotoBuff(const string &sCategory, double dBuff)
 {
     if (sCategory == CategoryAll)
     {
-        m_nPhotoBuffAll += nBuff;
+        m_dPhotoBuffAll += dBuff;
     }
     else if (sCategory == CategoryOnline)
     {
-        m_nPhotoBuffOnline += nBuff;
+        m_dPhotoBuffOnline += dBuff;
     }
     else if (sCategory == CategoryOffline)
     {
-        m_nPhotoBuffOffline += nBuff;
+        m_dPhotoBuffOffline += dBuff;
     }
 }
 
-void Building::AddMissionBuff(const string &sCategory, int nBuff)
+void Building::AddMissionBuff(const string &sCategory, double dBuff)
 {
     if (sCategory == CategoryAll)
     {
-        m_nMissionBuffAll += nBuff;
+        m_dMissionBuffAll += dBuff;
     }
     else if (sCategory == CategoryOnline)
     {
-        m_nMissionBuffOnline += nBuff;
+        m_dMissionBuffOnline += dBuff;
     }
     else if (sCategory == CategoryOffline)
     {
-        m_nMissionBuffOffline += nBuff;
+        m_dMissionBuffOffline += dBuff;
     }
 }
 
-void Building::AddAdditionBuff(const string &sCategory, int nBuff)
+void Building::AddAdditionBuff(const string &sCategory, double dBuff)
 {
     if (sCategory == CategoryAll)
     {
-        m_nAdditionBuffAll += nBuff;
+        m_dAdditionBuffAll += dBuff;
     }
     else if (sCategory == CategoryOnline)
     {
-        m_nAdditionBuffOnline += nBuff;
+        m_dAdditionBuffOnline += dBuff;
     }
     else if (sCategory == CategoryOffline)
     {
-        m_nAdditionBuffOffline += nBuff;
+        m_dAdditionBuffOffline += dBuff;
     }
 }
 
 void Building::ResetAdditionBuff()
 {
-    m_nAdditionBuffAll = 0;
-    m_nAdditionBuffOnline = 0;
-    m_nAdditionBuffOffline = 0;
+    m_dAdditionBuffAll = 0;
+    m_dAdditionBuffOnline = 0;
+    m_dAdditionBuffOffline = 0;
 }
 
 vector<pair<string, double> > Building::GetStarBuff()
@@ -127,15 +129,20 @@ vector<pair<string, double> > Building::GetStarBuff()
     return m_mapStarBuff[m_sStar];
 }
 
+double Building::GetBaseProfit()
+{
+    return m_dLevelProfit * m_starProfit;
+}
+
 double Building::GetTotalProfit(const string &sCategory)
 {
     if (sCategory == CategoryOnline)
     {
-        return (1 + m_nAdditionBuffAll + m_nAdditionBuffOnline) * m_dOnlineProfit;
+        return (1 + m_dAdditionBuffAll + m_dAdditionBuffOnline) * m_dOnlineProfit;
     }
     else if (sCategory == CategoryOffline)
     {
-        return (1 + m_nAdditionBuffAll + m_nAdditionBuffOffline) * m_dOfflineProfit;
+        return (1 + m_dAdditionBuffAll + m_dAdditionBuffOffline) * m_dOfflineProfit;
     }
     return 0;
 }
