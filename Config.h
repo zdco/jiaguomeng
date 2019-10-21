@@ -11,6 +11,12 @@
 
 using namespace std;
 
+const string BuildingConfig = "config/building.csv";
+const string PhotoConfig = "config/photo.csv";
+const string PolicyConfig = "config/policy.csv";
+const string MissionConfig = "config/mission.csv";
+const string JiaguoConfig = "config/jiaguo.csv";
+
 const string CategorySupply = "Supply"; //供货
 const string CategoryAll = "All"; //所有建筑
 const string CategoryOnline = "Online"; //建筑在线
@@ -37,18 +43,25 @@ public:
     //查询类别建筑
     unordered_map<string, Building*> GetCategoryBuilding(const string &sCategory);
 
+    void SaveBuildingConfig(vector<vector<string> > &vConfig);
+    void SavePhotoConfig(vector<vector<string> > &vConfig);
+    void SavePolicyConfig(vector<vector<string> > &vConfig);
+    void SaveMissionConfig(vector<vector<string> > &vConfig);
+    void SaveJiaguoConfig(vector<vector<string> > &vConfig);
+
 private:
     void ClearBuilding();
 
     vector<string> SepStr(const string sStr, const string &sSep);
     vector<vector<string> > ParseConfig(const string &configFile);
 
+    void SaveConfig(const string &configFile, const vector<vector<string> > &vConfig);
+
     void LoadBuildingUpgrade();
     void LoadBuffStatus();
     void LoadPhotoBuff();
     void LoadPolicyBuff();
     void LoadMissionBuff();
-    void LoadJiaguoBuff();
     void LoadBuildingName();
     void LoadBuilding();
 
@@ -57,6 +70,7 @@ private:
     void LoadPolicyConfig();
     void LoadMissionConfig();
     void LoadJiaguoConfig();
+
     void InitBuildingProfit();
 
     void AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId);
