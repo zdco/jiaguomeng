@@ -11,6 +11,15 @@
 
 using namespace std;
 
+const string BuildingNameData = "data/BuildingName.csv";
+const string BuildingData = "data/Building.csv";
+const string BuildingUpgradeData = "data/BuildingUpgrade.csv";
+const string BuffStatusData = "data/BuffStatus.csv";
+const string PhotoNameData = "data/PhotoName.csv";
+const string PhotoBuffData = "data/PhotoBuff.csv";
+const string PolicyBuffData = "data/PolicyBuff.csv";
+const string MissionBuffData = "data/MissionBuff.csv";
+
 const string BuildingConfig = "config/building.csv";
 const string PhotoConfig = "config/photo.csv";
 const string PolicyConfig = "config/policy.csv";
@@ -35,6 +44,8 @@ public:
     static Config* GetInstance();
     static void CloseInstance();
 
+	void Init();
+
     void LoadData();
 
     Building* GetBuilding(const string &sBuildingId);
@@ -43,17 +54,23 @@ public:
     //查询类别建筑
     unordered_map<string, Building*> GetCategoryBuilding(const string &sCategory);
 
+	vector<vector<string> > ParseConfig(const string &configFile);
+
     void SaveBuildingConfig(vector<vector<string> > &vConfig);
     void SavePhotoConfig(vector<vector<string> > &vConfig);
     void SavePolicyConfig(vector<vector<string> > &vConfig);
     void SaveMissionConfig(vector<vector<string> > &vConfig);
     void SaveJiaguoConfig(vector<vector<string> > &vConfig);
 
+	unordered_map<string, vector<pair<string, double> > > GetBuffStatus();
+	unordered_map<string, vector<string> > GetMissionBuff();
+	unordered_map<string, string> GetMissionName();
+
 private:
+	void ResetData();
     void ClearBuilding();
 
     vector<string> SepStr(const string sStr, const string &sSep);
-    vector<vector<string> > ParseConfig(const string &configFile);
 
     void SaveConfig(const string &configFile, const vector<vector<string> > &vConfig);
 
@@ -65,15 +82,15 @@ private:
     void LoadBuildingName();
     void LoadBuilding();
 
-    void LoadBuildingConfig();
-    void LoadPhotoConfig();
-    void LoadPolicyConfig();
-    void LoadMissionConfig();
-    void LoadJiaguoConfig();
+	void LoadBuildingConfig();
+	void LoadPhotoConfig();
+	void LoadPolicyConfig();
+	void LoadMissionConfig();
+	void LoadJiaguoConfig();
 
     void InitBuildingProfit();
 
-    void AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId);
+	void ParseBuffStatus(const string &sEffectId, double dEffectValue, const string &sTargetId, vector<pair<string, double> > &vBuffStatus);
     void AddPhotoBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
     void AddPhotoBuff(const string &sBuffId);
     void AddPolicyBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
@@ -87,7 +104,8 @@ private:
     unordered_map<string, vector<pair<string, double> > > m_mapBuffStatus; //buff，属性ID->建筑ID->buff
     unordered_map<string, string> m_mapPhotoBuff; //照片buff，照片ID->buff
     unordered_map<string, vector<string> > m_mapPolicyBuff; //政策buff，政策ID->级别->buff
-    unordered_map<string, string> m_mapMissionBuff; //城市任务buff，城市任务ID->buff
+	unordered_map<string, vector<string> > m_mapMissionBuff; //城市任务buff，城市任务ID->buff
+	unordered_map<string, string> m_mapMissionName; //城市任务名称，城市任务ID->名称
     unordered_map<string, string> m_mapJiaguoBuff; //家国之光buff，家国之光等级->buff
     unordered_map<string, vector<string> > m_mapCategoryBuilding; //类别对应的建筑ID
     unordered_map<string, Building*> m_mapBuilding; //建筑列表，ID->建筑

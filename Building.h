@@ -10,6 +10,9 @@ class Building
 {
 public:
     Building(const string &sName);
+
+	//重置所有数据
+	void Reset();
     
     void AddStarProfit(string sStar, double dProfit);
     void AddStarBuff(string sStar, const vector<pair<string, double> > &vBuff);

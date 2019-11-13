@@ -1,27 +1,36 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
+
 #include "Building.h"
 #include "Config.h"
 
 Building::Building(const string &sName)
     : m_sName(sName)
 {
-    m_dLevelProfit = 0;
-    m_starProfit = 0;
-    m_dOnlineProfit = 0;
-    m_dOfflineProfit = 0;
+	Reset();
+}
 
-    m_dPolicyBuffAll = 0;
-    m_dPolicyBuffOnline = 0;
-    m_dPolicyBuffOffline = 0;
+void Building::Reset()
+{
+	m_dLevelProfit = 0;
+	m_starProfit = 0;
+	m_dOnlineProfit = 0;
+	m_dOfflineProfit = 0;
 
-    m_dPhotoBuffAll = 0;
-    m_dPhotoBuffOnline = 0;
-    m_dPhotoBuffOffline = 0;
+	m_dPolicyBuffAll = 0;
+	m_dPolicyBuffOnline = 0;
+	m_dPolicyBuffOffline = 0;
 
-    m_dMissionBuffAll = 0;
-    m_dMissionBuffOnline = 0;
-    m_dMissionBuffOffline = 0;
+	m_dPhotoBuffAll = 0;
+	m_dPhotoBuffOnline = 0;
+	m_dPhotoBuffOffline = 0;
 
-    ResetAdditionBuff();
+	m_dMissionBuffAll = 0;
+	m_dMissionBuffOnline = 0;
+	m_dMissionBuffOffline = 0;
+
+	ResetAdditionBuff();
 }
 
 void Building::AddStarProfit(string sStar, double dProfit)

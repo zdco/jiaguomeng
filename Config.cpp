@@ -1,3 +1,7 @@
+#ifdef WIN32
+#include "stdafx.h"
+#endif
+
 #include "Config.h"
 #include "Building.h"
 
@@ -88,15 +92,30 @@ void Config::SaveConfig(const string &configFile, const vector<vector<string> > 
     }
 }
 
+void Config::Init()
+{
+	LoadBuildingUpgrade();
+	LoadBuffStatus();
+	LoadPhotoBuff();
+	LoadPolicyBuff();
+	LoadMissionBuff();
+	LoadBuildingName();
+	LoadBuilding();
+}
+
+void Config::ResetData()
+{
+	m_setValidBuilding.clear();
+
+	for (auto it = m_mapBuilding.begin(); it != m_mapBuilding.end(); it++)
+	{
+		it->second->Reset();
+	}
+}
+
 void Config::LoadData()
 {
-    LoadBuildingUpgrade();
-    LoadBuffStatus();
-    LoadPhotoBuff();
-    LoadPolicyBuff();
-    LoadMissionBuff();
-    LoadBuildingName();
-    LoadBuilding();
+	ResetData();
 
     LoadBuildingConfig();
     LoadPhotoConfig();
@@ -137,7 +156,7 @@ unordered_map<string, Building*> Config::GetCategoryBuilding(const string &sCate
 
 void Config::LoadBuildingUpgrade()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/BuildingUpgrade.csv");
+    vector<vector<string> > vConfig = ParseConfig(BuildingUpgradeData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
@@ -154,72 +173,76 @@ void Config::LoadBuildingUpgrade()
     }
 }
 
-void Config::AddBuffStatus(const string &sBuffId, const string &sEffectId, double dEffectValue, const string &sTargetId)
+void Config::ParseBuffStatus(const string &sEffectId, double dEffectValue, const string &sTargetId, vector<pair<string, double> > &vBuffStatus)
 {
     if (sEffectId != "-1")
     {
-        //cout << "sBuffId:" << sBuffId << ",sEffectId:" << sEffectId << ",dEffectValue:" << dEffectValue << ",sTargetId:" << sTargetId << endl;
         if (sTargetId == "-1")
         {
-            m_mapBuffStatus[sBuffId].push_back(make_pair(CategorySupply, dEffectValue));
+            vBuffStatus.push_back(make_pair(CategorySupply, dEffectValue));
         }
         else if (sTargetId == "1")
         {
             if (sEffectId >= "11" && sEffectId <= "14")
             {
-                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryAll, dEffectValue));
+                vBuffStatus.push_back(make_pair(CategoryAll, dEffectValue));
             }
             else if (sEffectId >= "21" && sEffectId <= "24")
             {
-                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryOnline, dEffectValue));
+                vBuffStatus.push_back(make_pair(CategoryOnline, dEffectValue));
             }
             else if (sEffectId >= "31" && sEffectId <= "34")
             {
-                m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryOffline, dEffectValue));
+                vBuffStatus.push_back(make_pair(CategoryOffline, dEffectValue));
             }
         }
         else if (sTargetId == "2")
         {
-            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryResidence, dEffectValue));
+            vBuffStatus.push_back(make_pair(CategoryResidence, dEffectValue));
         }
         else if (sTargetId == "3")
         {
-            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryBusiness, dEffectValue));
+            vBuffStatus.push_back(make_pair(CategoryBusiness, dEffectValue));
         }
         else if (sTargetId == "4")
         {
-            m_mapBuffStatus[sBuffId].push_back(make_pair(CategoryIndustrial, dEffectValue));
+            vBuffStatus.push_back(make_pair(CategoryIndustrial, dEffectValue));
         }
         else
         {
-            m_mapBuffStatus[sBuffId].push_back(make_pair(sTargetId, dEffectValue));
+            vBuffStatus.push_back(make_pair(sTargetId, dEffectValue));
         }
     }
 }
 
 void Config::LoadBuffStatus()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/BuffStatus.csv");
+    vector<vector<string> > vConfig = ParseConfig(BuffStatusData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
         if (vField.size() >= 13)
         {
             string sBuffId = vField[0];
-            for (int j = 0; j < 3; j++)
-            {
-                string sEffectId = vField[j * 3 + 1];
-                double dEffectValue = atof(vField[j * 3 + 2].c_str());
-                string sTargetId = vField[j * 3 + 3];
-                AddBuffStatus(sBuffId, sEffectId, dEffectValue, sTargetId);
+			for (int j = 0; j < 3; j++)
+			{
+				string sEffectId = vField[j * 3 + 1];
+				double dEffectValue = atof(vField[j * 3 + 2].c_str());
+				string sTargetId = vField[j * 3 + 3];
+				ParseBuffStatus(sEffectId, dEffectValue, sTargetId, m_mapBuffStatus[sBuffId]);
             }
         }
     }
 }
 
+unordered_map<string, vector<pair<string, double> > > Config::GetBuffStatus()
+{
+	return m_mapBuffStatus;
+}
+
 void Config::LoadPhotoBuff()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/PhotoBuff.csv");
+    vector<vector<string> > vConfig = ParseConfig(PhotoBuffData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
@@ -235,7 +258,7 @@ void Config::LoadPhotoBuff()
 
 void Config::LoadPolicyBuff()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/PolicyBuff.csv");
+    vector<vector<string> > vConfig = ParseConfig(PolicyBuffData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
@@ -251,23 +274,37 @@ void Config::LoadPolicyBuff()
 
 void Config::LoadMissionBuff()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/MissionBuff.csv");
+    vector<vector<string> > vConfig = ParseConfig(MissionBuffData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
         if (vField.size() >= 2)
         {
-            string sMissionId = vField[0];
-            string sBuffId = vField[1];
-            //cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
-            m_mapMissionBuff[sMissionId] = sBuffId;
+			string sMissionId = vField[0];
+			string sMissionName = vField[1];
+			m_mapMissionName[sMissionId] = sMissionName;
+			for (int j = 0; j < 5; j++)
+			{
+				string sBuffId = vField[j + 2];
+				m_mapMissionBuff[sMissionId].push_back(sBuffId);
+			}
         }
     }
 }
 
+unordered_map<string, vector<string> > Config::GetMissionBuff()
+{
+	return m_mapMissionBuff;
+}
+
+unordered_map<string, string> Config::GetMissionName()
+{
+	return m_mapMissionName;
+}
+
 void Config::LoadBuildingName()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/BuildingName.csv");
+    vector<vector<string> > vConfig = ParseConfig(BuildingNameData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
@@ -289,7 +326,7 @@ void Config::LoadBuildingName()
 
 void Config::LoadBuilding()
 {
-    vector<vector<string> > vConfig = ParseConfig("data/Building.csv");
+    vector<vector<string> > vConfig = ParseConfig(BuildingData);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
@@ -525,15 +562,12 @@ void Config::LoadMissionConfig()
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
-        if (vField.size() >= 1)
+        if (vField.size() >= 2)
         {
-            string sMissionId = vField[0];
-            //cout << "sMissionId:" << sMissionId << endl;
-            auto it = m_mapMissionBuff.find(sMissionId);
-            if (it != m_mapMissionBuff.end())
-            {
-                AddMissionBuff(it->second);
-            }
+			string sMissionId = vField[0];
+			string sBuffId = vField[1];
+			//cout << "sMissionId:" << sMissionId << ",sBuffId:" << sBuffId << endl;
+            AddMissionBuff(sBuffId);
         }
     }
 }
@@ -546,7 +580,7 @@ void Config::LoadJiaguoConfig()
         const vector<string> &vField = vConfig[i];
         if (vField.size() >= 1)
         {
-            double dBuff = atof(vField[0].c_str());
+            double dBuff = atoi(vField[0].c_str()) / 100.0f;
             AddPolicyBuff(m_mapBuilding, CategoryAll, dBuff);
         }
     }
@@ -596,7 +630,8 @@ void Config::SavePolicyConfig(vector<vector<string> > &vConfig)
 void Config::SaveMissionConfig(vector<vector<string> > &vConfig)
 {
     vector<string> vHead;
-    vHead.push_back("NameID");
+	vHead.push_back("NameID");
+	vHead.push_back("Effect");
     vConfig.insert(vConfig.begin(), vHead);
     SaveConfig(MissionConfig, vConfig);
 }

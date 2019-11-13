@@ -7,7 +7,7 @@ LIB=
 CFLAGS:=-std=c++11 -Wall -g -O0 -lrt -rdynamic -fPIC -Wl,-rpath=./ $(INC) $(LIB_PATH)
 CPPFLAGS:=$(CFLAGS)
 
-SRC=$(shell echo *.cpp)
+SRC=$(shell echo Building.cpp Calc.cpp Config.cpp main.cpp)
 OBJ=$(patsubst %.cpp,%.o,$(SRC))
 
 all: $(TARGET)
