@@ -101,6 +101,10 @@ BEGIN_MESSAGE_MAP(CJiaGuoMengDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_LJC_CALC, &CJiaGuoMengDlg::OnBnClickedLjcCalc)
 	ON_BN_CLICKED(IDC_QEJX_CALC, &CJiaGuoMengDlg::OnBnClickedQejxCalc)
 	ON_BN_CLICKED(IDC_RMSY_CALC, &CJiaGuoMengDlg::OnBnClickedRmsyCalc)
+	ON_BN_CLICKED(IDC_MXGG_CALC, &CJiaGuoMengDlg::OnBnClickedMxggCalc)
+	ON_BN_CLICKED(IDC_ZMKD_CALC, &CJiaGuoMengDlg::OnBnClickedZmkdCalc)
+	ON_BN_CLICKED(IDC_YYG_CALC, &CJiaGuoMengDlg::OnBnClickedYygCalc)
+	ON_BN_CLICKED(IDC_QGMY_CALC, &CJiaGuoMengDlg::OnBnClickedQgmyCalc)
 END_MESSAGE_MAP()
 
 
@@ -166,6 +170,10 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN55))->SetRange(1, 5);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN57))->SetRange(1, 5);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN59))->SetRange(1, 5);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN68))->SetRange(1, 5);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN70))->SetRange(1, 5);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN72))->SetRange(1, 5);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN74))->SetRange(1, 5);
 
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN1))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN3))->SetPos(1);
@@ -197,6 +205,10 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN55))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN57))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN59))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN68))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN70))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN72))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN74))->SetPos(1);
 
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN2))->SetRange(1, 2000);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN4))->SetRange(1, 2000);
@@ -228,6 +240,10 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN56))->SetRange(1, 2000);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN58))->SetRange(1, 2000);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN60))->SetRange(1, 2000);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN69))->SetRange(1, 2000);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN71))->SetRange(1, 2000);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN73))->SetRange(1, 2000);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN75))->SetRange(1, 2000);
 
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN2))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN4))->SetPos(1);
@@ -259,6 +275,10 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN56))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN58))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN60))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN69))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN71))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN73))->SetPos(1);
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN75))->SetPos(1);
 
 	LoadeBuildingConfig();
 	LoadJiaguoConfig();
@@ -367,6 +387,11 @@ void CJiaGuoMengDlg::OnBnClickedFxggCalc()
 	EnableTextField(IDC_FXGG_STAR, IDC_FXGG_LEVEL, IDC_FXGG_CALC);
 }
 
+void CJiaGuoMengDlg::OnBnClickedMxggCalc()
+{
+	EnableTextField(IDC_MXGG_STAR, IDC_MXGG_LEVEL, IDC_MXGG_CALC);
+}
+
 void CJiaGuoMengDlg::OnBnClickedBldCalc()
 {
 	EnableTextField(IDC_BLD_STAR, IDC_BLD_LEVEL, IDC_BLD_CALC);
@@ -415,6 +440,16 @@ void CJiaGuoMengDlg::OnBnClickedMszCalc()
 void CJiaGuoMengDlg::OnBnClickedMtzsCalc()
 {
 	EnableTextField(IDC_MTZS_STAR, IDC_MTZS_LEVEL, IDC_MTZS_CALC);
+}
+
+void CJiaGuoMengDlg::OnBnClickedZmkdCalc()
+{
+	EnableTextField(IDC_ZMKD_STAR, IDC_ZMKD_LEVEL, IDC_ZMKD_CALC);
+}
+
+void CJiaGuoMengDlg::OnBnClickedYygCalc()
+{
+	EnableTextField(IDC_YYG_STAR, IDC_YYG_LEVEL, IDC_YYG_CALC);
 }
 
 void CJiaGuoMengDlg::OnBnClickedMccCalc()
@@ -466,6 +501,12 @@ void CJiaGuoMengDlg::OnBnClickedRmsyCalc()
 {
 	EnableTextField(IDC_RMSY_STAR, IDC_RMSY_LEVEL, IDC_RMSY_CALC);
 }
+
+void CJiaGuoMengDlg::OnBnClickedQgmyCalc()
+{
+	EnableTextField(IDC_QGMY_STAR, IDC_QGMY_LEVEL, IDC_QGMY_CALC);
+}
+
 
 void CJiaGuoMengDlg::OnBnClickedPolicy()
 {
@@ -557,6 +598,7 @@ void CJiaGuoMengDlg::LoadeBuildingConfig()
 			else if (vField[0] == "1070") SetBuildingField(IDC_ZSXL_STAR, IDC_ZSXL_LEVEL, IDC_ZSXL_CALC, vField);
 			else if (vField[0] == "1080") SetBuildingField(IDC_KZBS_STAR, IDC_KZBS_LEVEL, IDC_KZBS_CALC, vField);
 			else if (vField[0] == "1090") SetBuildingField(IDC_FXGG_STAR, IDC_FXGG_LEVEL, IDC_FXGG_CALC, vField);
+			else if (vField[0] == "1100") SetBuildingField(IDC_MXGG_STAR, IDC_MXGG_LEVEL, IDC_MXGG_CALC, vField);
 			else if (vField[0] == "3000") SetBuildingField(IDC_BLD_STAR, IDC_BLD_LEVEL, IDC_BLD_CALC, vField);
 			else if (vField[0] == "3010") SetBuildingField(IDC_XX_STAR, IDC_XX_LEVEL, IDC_XX_CALC, vField);
 			else if (vField[0] == "3020") SetBuildingField(IDC_FZD_STAR, IDC_FZD_LEVEL, IDC_FZD_CALC, vField);
@@ -567,6 +609,8 @@ void CJiaGuoMengDlg::LoadeBuildingConfig()
 			else if (vField[0] == "3070") SetBuildingField(IDC_JYZ_STAR, IDC_JYZ_LEVEL, IDC_JYZ_CALC, vField);
 			else if (vField[0] == "3080") SetBuildingField(IDC_MSZ_STAR, IDC_MSZ_LEVEL, IDC_MSZ_CALC, vField);
 			else if (vField[0] == "3090") SetBuildingField(IDC_MTZS_STAR, IDC_MTZS_LEVEL, IDC_MTZS_CALC, vField);
+			else if (vField[0] == "3100") SetBuildingField(IDC_ZMKD_STAR, IDC_ZMKD_LEVEL, IDC_ZMKD_CALC, vField);
+			else if (vField[0] == "3110") SetBuildingField(IDC_YYG_STAR, IDC_YYG_LEVEL, IDC_YYG_CALC, vField);
 			else if (vField[0] == "5000") SetBuildingField(IDC_MCC_STAR, IDC_MCC_LEVEL, IDC_MCC_CALC, vField);
 			else if (vField[0] == "5010") SetBuildingField(IDC_ZZC_STAR, IDC_ZZC_LEVEL, IDC_ZZC_CALC, vField);
 			else if (vField[0] == "5020") SetBuildingField(IDC_SC_STAR, IDC_SC_LEVEL, IDC_SC_CALC, vField);
@@ -577,6 +621,7 @@ void CJiaGuoMengDlg::LoadeBuildingConfig()
 			else if (vField[0] == "5070") SetBuildingField(IDC_LJC_STAR, IDC_LJC_LEVEL, IDC_LJC_CALC, vField);
 			else if (vField[0] == "5080") SetBuildingField(IDC_QEJX_STAR, IDC_QEJX_LEVEL, IDC_QEJX_CALC, vField);
 			else if (vField[0] == "5090") SetBuildingField(IDC_RMSY_STAR, IDC_RMSY_LEVEL, IDC_RMSY_CALC, vField);
+			else if (vField[0] == "5100") SetBuildingField(IDC_QGMY_STAR, IDC_QGMY_LEVEL, IDC_QGMY_CALC, vField);
 		}
 	}
 }
@@ -594,6 +639,7 @@ void CJiaGuoMengDlg::SaveBuildingConfig()
 	vBuildingConfig.push_back(GetBuildingField("1070", IDC_ZSXL_STAR, IDC_ZSXL_LEVEL, IDC_ZSXL_CALC));
 	vBuildingConfig.push_back(GetBuildingField("1080", IDC_KZBS_STAR, IDC_KZBS_LEVEL, IDC_KZBS_CALC));
 	vBuildingConfig.push_back(GetBuildingField("1090", IDC_FXGG_STAR, IDC_FXGG_LEVEL, IDC_FXGG_CALC));
+	vBuildingConfig.push_back(GetBuildingField("1100", IDC_MXGG_STAR, IDC_MXGG_LEVEL, IDC_MXGG_CALC));
 	vBuildingConfig.push_back(GetBuildingField("3000", IDC_BLD_STAR, IDC_BLD_LEVEL, IDC_BLD_CALC));
 	vBuildingConfig.push_back(GetBuildingField("3010", IDC_XX_STAR, IDC_XX_LEVEL, IDC_XX_CALC));
 	vBuildingConfig.push_back(GetBuildingField("3020", IDC_FZD_STAR, IDC_FZD_LEVEL, IDC_FZD_CALC));
@@ -604,6 +650,8 @@ void CJiaGuoMengDlg::SaveBuildingConfig()
 	vBuildingConfig.push_back(GetBuildingField("3070", IDC_JYZ_STAR, IDC_JYZ_LEVEL, IDC_JYZ_CALC));
 	vBuildingConfig.push_back(GetBuildingField("3080", IDC_MSZ_STAR, IDC_MSZ_LEVEL, IDC_MSZ_CALC));
 	vBuildingConfig.push_back(GetBuildingField("3090", IDC_MTZS_STAR, IDC_MTZS_LEVEL, IDC_MTZS_CALC));
+	vBuildingConfig.push_back(GetBuildingField("3100", IDC_ZMKD_STAR, IDC_ZMKD_LEVEL, IDC_ZMKD_CALC));
+	vBuildingConfig.push_back(GetBuildingField("3110", IDC_YYG_STAR, IDC_YYG_LEVEL, IDC_YYG_CALC));
 	vBuildingConfig.push_back(GetBuildingField("5000", IDC_MCC_STAR, IDC_MCC_LEVEL, IDC_MCC_CALC));
 	vBuildingConfig.push_back(GetBuildingField("5010", IDC_ZZC_STAR, IDC_ZZC_LEVEL, IDC_ZZC_CALC));
 	vBuildingConfig.push_back(GetBuildingField("5020", IDC_SC_STAR, IDC_SC_LEVEL, IDC_SC_CALC));
@@ -614,6 +662,7 @@ void CJiaGuoMengDlg::SaveBuildingConfig()
 	vBuildingConfig.push_back(GetBuildingField("5070", IDC_LJC_STAR, IDC_LJC_LEVEL, IDC_LJC_CALC));
 	vBuildingConfig.push_back(GetBuildingField("5080", IDC_QEJX_STAR, IDC_QEJX_LEVEL, IDC_QEJX_CALC));
 	vBuildingConfig.push_back(GetBuildingField("5090", IDC_RMSY_STAR, IDC_RMSY_LEVEL, IDC_RMSY_CALC));
+	vBuildingConfig.push_back(GetBuildingField("5100", IDC_QGMY_STAR, IDC_QGMY_LEVEL, IDC_QGMY_CALC));
 
 	Config::GetInstance()->SaveBuildingConfig(vBuildingConfig);
 }

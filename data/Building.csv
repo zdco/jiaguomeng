@@ -49,6 +49,11 @@ StarLevel,TextId,Category,Rarity,ProfitCoefficient,AdditionalAttributeId1,Additi
 3,1090,Residence,Legendary,10.032,10921,10922
 4,1090,Residence,Legendary,40.128,10931,10932
 5,1090,Residence,Legendary,200.64,10941,10942
+1,1100,Residence,Legendary,1.235,11001,11002
+2,1100,Residence,Legendary,2.47,11011,11012
+3,1100,Residence,Legendary,7.41,11021,11022
+4,1100,Residence,Legendary,29.64,11031,11032
+5,1100,Residence,Legendary,148.2,11041,11042
 1,3000,Business,Common,1,30001,0
 2,3000,Business,Common,2,30011,0
 3,3000,Business,Common,6,30021,0
@@ -99,6 +104,16 @@ StarLevel,TextId,Category,Rarity,ProfitCoefficient,AdditionalAttributeId1,Additi
 3,3090,Business,Legendary,9.69,30921,30922
 4,3090,Business,Legendary,38.76,30931,30932
 5,3090,Business,Legendary,193.8,30941,30942
+1,3100,Business,Rare,1.4,31001,31002
+2,3100,Business,Rare,2.8,31011,31012
+3,3100,Business,Rare,8.4,31021,31022
+4,3100,Business,Rare,33.6,31031,31032
+5,3100,Business,Rare,168,31041,31042
+1,3110,Business,Legendary,1.52,31101,31102
+2,3110,Business,Legendary,3.04,31111,31112
+3,3110,Business,Legendary,9.12,31121,31122
+4,3110,Business,Legendary,36.48,31131,31132
+5,3110,Business,Legendary,182.4,31141,31142
 1,5000,Industrial,Common,1,50001,0
 2,5000,Industrial,Common,2,50011,0
 3,5000,Industrial,Common,6,50021,0
@@ -149,3 +164,8 @@ StarLevel,TextId,Category,Rarity,ProfitCoefficient,AdditionalAttributeId1,Additi
 3,5090,Industrial,Legendary,6,50921,50922
 4,5090,Industrial,Legendary,24,50931,50932
 5,5090,Industrial,Legendary,120,50941,50942
+1,5100,Industrial,Legendary,1.52,51001,51002
+2,5100,Industrial,Legendary,3.04,51011,51012
+3,5100,Industrial,Legendary,9.12,51021,51022
+4,5100,Industrial,Legendary,36.48,51031,51032
+5,5100,Industrial,Legendary,182.4,51041,51042

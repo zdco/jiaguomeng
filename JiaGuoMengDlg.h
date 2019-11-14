@@ -85,4 +85,9 @@ private:
 	void SaveBuildingConfig();
 	void LoadJiaguoConfig();
 	void SaveJiaguoConfig();
+public:
+	afx_msg void OnBnClickedMxggCalc();
+	afx_msg void OnBnClickedZmkdCalc();
+	afx_msg void OnBnClickedYygCalc();
+	afx_msg void OnBnClickedQgmyCalc();
 };
