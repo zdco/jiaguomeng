@@ -35,8 +35,10 @@ private:
 	string GetTextField(int nID);
 	void ShowWindow(int nTitleID, int nPolicyID, int nSpinID, BOOL bShow);
 	int GetPolicyStage(const string &sPolicyId);
+	void LoadPolicyData();
 	void LoadConfig();
 
 private:
-	map<int, vector<pair<string, string> > > m_mapStagePolicy;
+	map<string, string> m_mapPolicyName; //政策名称
+	map<int, vector<string> > m_mapPolicyStage; //阶段对应政策ID
 };

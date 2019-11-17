@@ -262,10 +262,10 @@ void Config::LoadPolicyBuff()
     for (size_t i = 0; i < vConfig.size(); i++)
     {
         const vector<string> &vField = vConfig[i];
-        if (vField.size() >= 2)
+        if (vField.size() >= 3)
         {
-            string sPolicyId = vField[0];
-            string sBuffId = vField[1];
+			string sPolicyId = vField[1];
+            string sBuffId = vField[2];
             //cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
             m_mapPolicyBuff[sPolicyId].push_back(sBuffId);
         }
@@ -506,11 +506,13 @@ void Config::LoadPolicyConfig()
     //叠加该阶段之前的所有政策buff
     for (auto it = m_mapPolicyBuff.begin(); it != m_mapPolicyBuff.end(); it++)
     {
-        if (it->first < sMinPolicyId)
+		//由于ID排序不规则，使用不等于来判断，相等时终止循环
+        if (it->first == sMinPolicyId)
         {
-            string sBuffId = it->second.back();
-            AddPolicyBuff(sBuffId);
+			break;
         }
+		string sBuffId = it->second.back();
+		AddPolicyBuff(sBuffId);
     }
 }
 

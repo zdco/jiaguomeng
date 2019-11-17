@@ -17,6 +17,8 @@ const string BuildingUpgradeData = "data/BuildingUpgrade.csv";
 const string BuffStatusData = "data/BuffStatus.csv";
 const string PhotoNameData = "data/PhotoName.csv";
 const string PhotoBuffData = "data/PhotoBuff.csv";
+const string PolicyNameData = "data/PolicyName.csv";
+const string PolicyStageData = "data/PolicyStage.csv";
 const string PolicyBuffData = "data/PolicyBuff.csv";
 const string MissionBuffData = "data/MissionBuff.csv";
 
