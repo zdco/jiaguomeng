@@ -5,6 +5,7 @@
 #include <set>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits>
@@ -67,6 +68,7 @@ public:
 	unordered_map<string, vector<pair<string, double> > > GetBuffStatus();
 	unordered_map<string, vector<string> > GetMissionBuff();
 	unordered_map<string, string> GetMissionName();
+	string GetUnit(const double &dValue);
 
 private:
 	void ResetData();

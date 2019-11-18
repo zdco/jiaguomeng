@@ -56,6 +56,26 @@ vector<string> Config::SepStr(const string sStr, const string &sSep)
     return vResult;
 }
 
+string Config::GetUnit(const double &dValue)
+{
+	ostringstream os;
+	if (dValue > 1e39) os << dValue / 1e39 << "ii";
+	else if (dValue > 1e36) os << dValue / 1e36 << "hh";
+	else if (dValue > 1e33) os << dValue / 1e33 << "gg";
+	else if (dValue > 1e30) os << dValue / 1e30 << "ff";
+	else if (dValue > 1e27) os << dValue / 1e27 << "ee";
+	else if (dValue > 1e24) os << dValue / 1e24 << "dd";
+	else if (dValue > 1e21) os << dValue / 1e21 << "cc";
+	else if (dValue > 1e18) os << dValue / 1e18 << "bb";
+	else if (dValue > 1e15) os << dValue / 1e15 << "aa";
+	else if (dValue > 1e12) os << dValue / 1e12 << "T";
+	else if (dValue > 1e9) os << dValue / 1e9 << "B";
+	else if (dValue > 1e6) os << dValue / 1e6 << "M";
+	else if (dValue > 1e3) os << dValue / 1e3 << "K";
+	else os << dValue;
+	return os.str();
+}
+
 vector<vector<string> > Config::ParseConfig(const string &configFile)
 {
     vector<vector<string> > vConfig;

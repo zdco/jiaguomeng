@@ -700,14 +700,20 @@ void CJiaGuoMengDlg::OnBnClickedStart()
 	if (it != mapTotalProfit.rend())
 	{
 		ostringstream os;
-		os << "总收入：" << it->first << "\r\n";
+		os << "在线总收入：" << Config::GetInstance()->GetUnit(it->first) << "\r\n";
+		map<string, double> mapData;
 		for (auto data_it = it->second.begin(); data_it != it->second.end(); data_it++)
+		{
+			mapData[data_it->first] = data_it->second;
+		}
+
+		for (auto data_it = mapData.begin(); data_it != mapData.end(); data_it++)
 		{
 			Building* building = Config::GetInstance()->GetBuilding(data_it->first);
 			if (building)
 			{
 				double baseProfit = building->GetBaseProfit();
-				os << data_it->first << "（" << building->GetName() << "）：" << data_it->second << "（" << baseProfit << "+" << data_it->second - baseProfit << "）\r\n";
+				os << building->GetName() << "：" << Config::GetInstance()->GetUnit(data_it->second) << "（" << Config::GetInstance()->GetUnit(baseProfit) << "+" << Config::GetInstance()->GetUnit(data_it->second - baseProfit) << "）\r\n";
 			}
 		}
 		SetTextField(IDC_RESULT, os.str());
