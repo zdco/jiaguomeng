@@ -267,6 +267,10 @@ void Config::LoadPolicyBuff()
 			string sPolicyId = vField[1];
             string sBuffId = vField[2];
             //cout << "sPolicyId:" << sPolicyId << ",sBuffId:" << sBuffId << endl;
+			if (m_mapPolicyBuff.find(sPolicyId) == m_mapPolicyBuff.end())
+			{
+				m_vPolicyId.push_back(sPolicyId);
+			}
             m_mapPolicyBuff[sPolicyId].push_back(sBuffId);
         }
     }
@@ -475,7 +479,7 @@ void Config::AddPolicyBuff(const string &sBuffId)
 
 void Config::LoadPolicyConfig()
 {
-    string sMinPolicyId;
+    string sFirstPolicyId;
     vector<vector<string> > vConfig = ParseConfig(PolicyConfig);
     for (size_t i = 0; i < vConfig.size(); i++)
     {
@@ -486,9 +490,9 @@ void Config::LoadPolicyConfig()
             int nLevel = atoi(vField[1].c_str());
             //cout << "sPolicyId:" << sPolicyId << ",nLevel:" << nLevel << endl;
 
-            if (sMinPolicyId.empty() || sMinPolicyId > sPolicyId)
+            if (sFirstPolicyId.empty())
             {
-                sMinPolicyId = sPolicyId;
+				sFirstPolicyId = sPolicyId;
             }
 
             if (nLevel > 0)
@@ -504,14 +508,15 @@ void Config::LoadPolicyConfig()
     }
 
     //叠加该阶段之前的所有政策buff
-    for (auto it = m_mapPolicyBuff.begin(); it != m_mapPolicyBuff.end(); it++)
+	for (size_t i = 0; i < m_vPolicyId.size(); i++)
     {
+		const string sPolicyId = m_vPolicyId[i];
 		//由于ID排序不规则，使用不等于来判断，相等时终止循环
-        if (it->first == sMinPolicyId)
+        if (sPolicyId == sFirstPolicyId)
         {
 			break;
         }
-		string sBuffId = it->second.back();
+		string sBuffId = m_mapPolicyBuff[sPolicyId].back();
 		AddPolicyBuff(sBuffId);
     }
 }
