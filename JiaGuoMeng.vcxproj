@@ -182,9 +182,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Building.h" />
     <ClInclude Include="Calc.h" />
     <ClInclude Include="Config.h" />
