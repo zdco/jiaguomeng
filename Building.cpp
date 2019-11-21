@@ -29,8 +29,6 @@ void Building::Reset()
 	m_dMissionBuffAll = 0;
 	m_dMissionBuffOnline = 0;
 	m_dMissionBuffOffline = 0;
-
-	ResetAdditionBuff();
 }
 
 void Building::AddStarProfit(string sStar, double dProfit)
@@ -110,29 +108,6 @@ void Building::AddMissionBuff(const string &sCategory, double dBuff)
     }
 }
 
-void Building::AddAdditionBuff(const string &sCategory, double dBuff)
-{
-    if (sCategory == CategoryAll)
-    {
-        m_dAdditionBuffAll += dBuff;
-    }
-    else if (sCategory == CategoryOnline)
-    {
-        m_dAdditionBuffOnline += dBuff;
-    }
-    else if (sCategory == CategoryOffline)
-    {
-        m_dAdditionBuffOffline += dBuff;
-    }
-}
-
-void Building::ResetAdditionBuff()
-{
-    m_dAdditionBuffAll = 0;
-    m_dAdditionBuffOnline = 0;
-    m_dAdditionBuffOffline = 0;
-}
-
 vector<pair<string, double> > Building::GetStarBuff()
 {
     return m_mapStarBuff[m_sStar];
@@ -143,15 +118,15 @@ double Building::GetBaseProfit()
     return m_dLevelProfit * m_starProfit;
 }
 
-double Building::GetTotalProfit(const string &sCategory)
+double Building::GetProfit(const string &sCategory)
 {
     if (sCategory == CategoryOnline)
     {
-        return (1 + m_dAdditionBuffAll + m_dAdditionBuffOnline) * m_dOnlineProfit;
+        return m_dOnlineProfit;
     }
     else if (sCategory == CategoryOffline)
     {
-        return (1 + m_dAdditionBuffAll + m_dAdditionBuffOffline) * m_dOfflineProfit;
+        return m_dOfflineProfit;
     }
     return 0;
 }

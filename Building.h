@@ -25,14 +25,11 @@ public:
     void AddPhotoBuff(const string &sCategory, double dBuff);
     void AddMissionBuff(const string &sCategory, double dBuff);
 
-    void AddAdditionBuff(const string &sCategory, double dBuff);
-    void ResetAdditionBuff();
-
     vector<pair<string, double> > GetStarBuff();
     //获取基础收益
     double GetBaseProfit();
     //获取总收益
-    double GetTotalProfit(const string &sCategory);
+    double GetProfit(const string &sCategory);
     string GetName();
 
 private:
@@ -58,11 +55,6 @@ private:
     double m_dMissionBuffAll;
     double m_dMissionBuffOnline;
     double m_dMissionBuffOffline;
-
-    //建筑加成buff，按其它建筑星级对应
-    double m_dAdditionBuffAll;
-    double m_dAdditionBuffOnline;
-    double m_dAdditionBuffOffline;
 
     unordered_map<string, vector<pair<string, double> > > m_mapStarBuff; //建筑星级加成其它建筑buff，星级->其它建筑->buff
     unordered_map<string, double> m_mapStarProfit; //建筑星级收入，星级->收益

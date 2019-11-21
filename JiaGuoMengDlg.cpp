@@ -10,8 +10,6 @@
 #include "PhotoDlg.h"
 #include "MissionDlg.h"
 
-#include "Calc.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -67,6 +65,7 @@ BEGIN_MESSAGE_MAP(CJiaGuoMengDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_MESSAGE(WM_CALC_FINISH, OnCalcFinish)
 	ON_BN_CLICKED(IDC_POLICY, &CJiaGuoMengDlg::OnBnClickedPolicy)
 	ON_BN_CLICKED(IDC_PHOTO, &CJiaGuoMengDlg::OnBnClickedPhoto)
 	ON_BN_CLICKED(IDC_MISSION, &CJiaGuoMengDlg::OnBnClickedMission)
@@ -105,6 +104,7 @@ BEGIN_MESSAGE_MAP(CJiaGuoMengDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_ZMKD_CALC, &CJiaGuoMengDlg::OnBnClickedZmkdCalc)
 	ON_BN_CLICKED(IDC_YYG_CALC, &CJiaGuoMengDlg::OnBnClickedYygCalc)
 	ON_BN_CLICKED(IDC_QGMY_CALC, &CJiaGuoMengDlg::OnBnClickedQgmyCalc)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -245,6 +245,9 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN73))->SetRange(1, 2000);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN75))->SetRange(1, 2000);
 
+	//线程数
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN76))->SetRange(1, 100);
+
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN2))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN4))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN6))->SetPos(1);
@@ -280,10 +283,19 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN73))->SetPos(1);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN75))->SetPos(1);
 
+	//线程数
+	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN76))->SetPos(4);
+
+	//进度条
+	CProgressCtrl *pProgCtrl = (CProgressCtrl*)GetDlgItem(IDC_CALC_PERCENT);
+	pProgCtrl->SetRange(0, 100);
+
 	LoadeBuildingConfig();
 	LoadJiaguoConfig();
 
 	Config::GetInstance()->Init();
+
+	SetTimer(1, 00, NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -689,13 +701,15 @@ void CJiaGuoMengDlg::SaveJiaguoConfig()
 	Config::GetInstance()->SaveJiaguoConfig(vJiaguoConfig);
 }
 
-void CJiaGuoMengDlg::OnBnClickedStart()
+LRESULT CJiaGuoMengDlg::OnCalcFinish(WPARAM wParam, LPARAM lParam)
 {
-	SaveBuildingConfig();
-	SaveJiaguoConfig();
+	SetTextField(IDC_RESULT, m_sCalcResult);
+	((CButton*)GetDlgItem(ID_START))->EnableWindow(TRUE);
+	return 0;
+}
 
-	Calc calc;
-	multimap<double, unordered_map<string, double> > mapTotalProfit = calc.Start();
+void CJiaGuoMengDlg::HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit)
+{
 	auto it = mapTotalProfit.rbegin();
 	if (it != mapTotalProfit.rend())
 	{
@@ -716,6 +730,27 @@ void CJiaGuoMengDlg::OnBnClickedStart()
 				os << building->GetName() << "：" << Config::GetInstance()->GetUnit(data_it->second) << "（" << Config::GetInstance()->GetUnit(baseProfit) << "+" << Config::GetInstance()->GetUnit(data_it->second - baseProfit) << "）\r\n";
 			}
 		}
-		SetTextField(IDC_RESULT, os.str());
+		m_sCalcResult = os.str();
+		PostMessage(WM_CALC_FINISH, 0, 0);
 	}
+}
+
+void CJiaGuoMengDlg::OnBnClickedStart()
+{
+	SaveBuildingConfig();
+	SaveJiaguoConfig();
+
+	int nThreadCount = atoi(GetTextField(IDC_THREAD_COUNT).c_str());
+	m_calc.Start(nThreadCount, this);
+
+	SetTextField(IDC_RESULT, "");
+	((CButton*)GetDlgItem(ID_START))->EnableWindow(FALSE);
+}
+
+void CJiaGuoMengDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	int percent = m_calc.GetCalcPercent();
+	CProgressCtrl *pProgCtrl = (CProgressCtrl*)GetDlgItem(IDC_CALC_PERCENT);
+	pProgCtrl->SetPos(percent);
+	CDialogEx::OnTimer(nIDEvent);
 }

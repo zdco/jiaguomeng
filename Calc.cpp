@@ -3,15 +3,24 @@
 #endif
 
 #include "Calc.h"
+#include "JiaGuoMengDlg.h"
 
 Calc::Calc()
 {
-
+	m_bRun = false;
+	m_pThread = NULL;
+	m_nCurCount = 0;
+	m_nTotalCount = 0;
 }
 
 Calc::~Calc()
 {
-
+	if (m_pThread)
+	{
+		m_pThread->join();
+		delete m_pThread;
+		m_pThread = NULL;
+	}
 }
 
 vector<unordered_map<string, Building*> > Calc::GetComb(const unordered_map<string, Building*> &mapData)
@@ -48,32 +57,24 @@ vector<unordered_map<string, Building*> > Calc::GetComb(const unordered_map<stri
     return vOut;
 }
 
-void Calc::AddAdditionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff)
+void Calc::AddAdditionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff, unordered_map<string, map<string, double> > &mapAdditionBuff)
 {
     for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        it->second->AddAdditionBuff(sCategory, dBuff);
+		mapAdditionBuff[it->first][sCategory] += dBuff;
     }
 }
 
-void Calc::ResetAdditionBuff(const unordered_map<string, Building*> &mapBuilding)
-{
-    for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
-    {
-        it->second->ResetAdditionBuff();
-    }
-}
-
-void Calc::AddTargetBuff(const string &sTargetId, const unordered_map<string, Building*> &mapBuilding, double dBuff)
+void Calc::AddTargetBuff(const string &sTargetId, const unordered_map<string, Building*> &mapBuilding, double dBuff, unordered_map<string, map<string, double> > &mapAdditionBuff)
 {
     auto it = mapBuilding.find(sTargetId);
     if (it != mapBuilding.end())
     {
-        it->second->AddAdditionBuff(CategoryAll, dBuff);
+		mapAdditionBuff[it->first][CategoryAll] += dBuff;
     }
 }
 
-void Calc::PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding)
+void Calc::PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff)
 {
     for (auto it = mapAllBuilding.begin(); it != mapAllBuilding.end(); it++)
     {
@@ -86,95 +87,127 @@ void Calc::PrepareBuff(const unordered_map<string, Building*> &mapResidence, con
                 || buff.first == CategoryOnline
                 || buff.first == CategoryOffline)
             {
-                AddAdditionBuff(mapAllBuilding, buff.first, buff.second);
+                AddAdditionBuff(mapAllBuilding, buff.first, buff.second, mapAdditionBuff);
             }
             else if (buff.first == CategoryResidence)
             {
-                AddAdditionBuff(mapResidence, CategoryAll, buff.second);
+                AddAdditionBuff(mapResidence, CategoryAll, buff.second, mapAdditionBuff);
             }
             else if (buff.first == CategoryBusiness)
             {
-                AddAdditionBuff(mapBusiness, CategoryAll, buff.second);
+                AddAdditionBuff(mapBusiness, CategoryAll, buff.second, mapAdditionBuff);
             }
             else if (buff.first == CategoryIndustrial)
             {
-                AddAdditionBuff(mapIndustrial, CategoryAll, buff.second);
+                AddAdditionBuff(mapIndustrial, CategoryAll, buff.second, mapAdditionBuff);
             }
             else
             {
-                AddTargetBuff(buff.first, mapAllBuilding, buff.second);
+                AddTargetBuff(buff.first, mapAllBuilding, buff.second, mapAdditionBuff);
             }
         }
     }
 }
 
-void Calc::CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, multimap<double, unordered_map<string, double> > &mapTotalProfit)
+void Calc::CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff, multimap<double, unordered_map<string, double> > &mapTotalProfit)
 {
     unordered_map<string, double> mapBuildingProfit;
     double totalProfit = 0;
     for (auto it = mapBuilding.begin(); it != mapBuilding.end(); it++)
     {
-        double dProfit = it->second->GetTotalProfit(sCategory);
+        double dProfit = it->second->GetProfit(sCategory);
+		auto addition_it = mapAdditionBuff[it->first];
+		if (sCategory == CategoryOnline)
+		{
+			dProfit = (1 + addition_it[CategoryAll] + addition_it[CategoryOnline]) * dProfit;
+		}
+		else if (sCategory == CategoryOffline)
+		{
+			dProfit = (1 + addition_it[CategoryAll] + addition_it[CategoryOffline]) * dProfit;
+		}
         totalProfit += dProfit;
         mapBuildingProfit[it->first] = dProfit;
     }
-    mapTotalProfit.insert(make_pair(totalProfit, mapBuildingProfit));
+	mapTotalProfit.insert(make_pair(totalProfit, mapBuildingProfit));
 }
 
-void Calc::ShowResult(const multimap<double, unordered_map<string, double> > &mapTotalProfit, int topN)
+void Calc::CalcThread(const int &nIndex, const int &nCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial)
 {
-    int count = 0;
-    for (auto it = mapTotalProfit.rbegin(); it != mapTotalProfit.rend(); it++)
-    {
-        if (count++ >= topN)
-        {
-            break;
-        }
+	int nStartIndex = nIndex * nCount;
+	int nCurIndex = 0;
+	multimap<double, unordered_map<string, double> > mapTotalProfit;
+	for (size_t i = 0; i < vResidence.size(); i++)
+	{
+		unordered_map<string, Building*> mapResidence = vResidence[i];
+		for (size_t j = 0; j < vBusiness.size(); j++)
+		{
+			unordered_map<string, Building*> mapBusiness = vBusiness[j];
+			for (size_t k = 0; k < vIndustrial.size(); k++)
+			{
+				if (!m_bRun || nCurIndex >= nStartIndex + nCount)
+				{//超过计算区间，退出
+					goto finish;
+				}
+				if (nCurIndex++ < nStartIndex)
+				{//未开始位置
+					continue;
+				}
 
-        cout << it->first << endl;
-        for (auto data_it = it->second.begin(); data_it != it->second.end(); data_it++)
-        {
-            Building* building = Config::GetInstance()->GetBuilding(data_it->first);
-            if (building)
-            {
-                double baseProfit = building->GetBaseProfit();
-                cout << data_it->first << "(" << building->GetName() << "):" << data_it->second << "(" << baseProfit << "+" << data_it->second - baseProfit << ")" << endl;
-            }
-        }
-    }
+				unordered_map<string, Building*> mapIndustrial = vIndustrial[k];
+
+				unordered_map<string, map<string, double> > mapAdditionBuff;
+				unordered_map<string, Building*> mapAllBuilding;
+				mapAllBuilding.insert(mapResidence.begin(), mapResidence.end());
+				mapAllBuilding.insert(mapBusiness.begin(), mapBusiness.end());
+				mapAllBuilding.insert(mapIndustrial.begin(), mapIndustrial.end());
+				PrepareBuff(mapResidence, mapBusiness, mapIndustrial, mapAllBuilding, mapAdditionBuff);
+				CalcProfit(sCategory, mapAllBuilding, mapAdditionBuff, mapTotalProfit);
+
+				++m_nCurCount;
+			}
+		}
+	}
+
+finish:
+	m_mutex.lock();
+	m_mapTotalProfit.insert(mapTotalProfit.begin(), mapTotalProfit.end());
+	m_mutex.unlock();
 }
 
-multimap<double, unordered_map<string, double> > Calc::CreateScenes(const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial)
+void Calc::CreateScenes(const int &nThreadCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial)
 {
-    multimap<double, unordered_map<string, double> > mapTotalProfit;
-    for (size_t i = 0; i < vResidence.size(); i++)
-    {
-        cout << "progress complete " << i * 100 / vResidence.size() << " %" << endl;
-        unordered_map<string, Building*> mapResidence = vResidence[i];
-        for (size_t j = 0; j < vBusiness.size(); j++)
-        {
-            unordered_map<string, Building*> mapBusiness = vBusiness[j];
-            for (size_t k = 0; k < vIndustrial.size(); k++)
-            {
-                unordered_map<string, Building*> mapIndustrial = vIndustrial[k];
+	m_nCurCount = 0;
+	m_mapTotalProfit.clear();
 
-                unordered_map<string, Building*> mapAllBuilding;
-                mapAllBuilding.insert(mapResidence.begin(), mapResidence.end());
-                mapAllBuilding.insert(mapBusiness.begin(), mapBusiness.end());
-                mapAllBuilding.insert(mapIndustrial.begin(), mapIndustrial.end());
-                PrepareBuff(mapResidence, mapBusiness, mapIndustrial, mapAllBuilding);
-                CalcProfit(sCategory, mapAllBuilding, mapTotalProfit);
-                ResetAdditionBuff(mapAllBuilding);
-            }
-        }
-    }
-	ShowResult(mapTotalProfit, 3);
+	m_nTotalCount = vResidence.size() * vBusiness.size() * vIndustrial.size();
+	int nCountPerThread = (m_nTotalCount + nThreadCount - 1) / nThreadCount;
 
-	return mapTotalProfit;
+	vector<thread*> vThread;
+	for (int i = 0; i < nThreadCount; i++)
+	{
+		vThread.push_back(new thread(&Calc::CalcThread, this, i, nCountPerThread, sCategory, vResidence, vBusiness, vIndustrial));
+	}
+
+	for (size_t i = 0; i < vThread.size(); i++)
+	{
+		vThread[i]->join();
+		delete vThread[i];
+	}
+
+	//通知完成
+	if (m_pDlg)
+	{
+		m_pDlg->HandleCalcData(m_mapTotalProfit);
+	}
 }
 
-multimap<double, unordered_map<string, double> > Calc::Start()
+void Calc::Start(const int &nThreadCount, CJiaGuoMengDlg* pDlg)
 {
+	Stop();
+
+	m_pDlg = pDlg;
+	m_bRun = true;
+
     Config::GetInstance()->LoadData();
 
     unordered_map<string, vector<vector<string> > > mapCategoryComb;
@@ -186,6 +219,21 @@ multimap<double, unordered_map<string, double> > Calc::Start()
     vector<unordered_map<string, Building*> > vIndustrial = GetComb(mapIndustrial);
     cout << "vResidence:" << vResidence.size() << ", vBusiness:" << vBusiness.size() << ", vIndustrial:" << vIndustrial.size() << endl;
 
-	return CreateScenes(CategoryOnline, vResidence, vBusiness, vIndustrial);
+	m_pThread = new thread(&Calc::CreateScenes, this, nThreadCount, CategoryOnline, vResidence, vBusiness, vIndustrial);
+}
 
+void Calc::Stop()
+{
+	m_bRun = false;
+	if (m_pThread)
+	{
+		m_pThread->join();
+		delete m_pThread;
+		m_pThread = NULL;
+	}
+}
+
+int Calc::GetCalcPercent()
+{
+	return m_nTotalCount > 0 ? (m_nCurCount * 100 / m_nTotalCount) : 0;
 }

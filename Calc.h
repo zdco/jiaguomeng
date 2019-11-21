@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include <map>
 
 #include "Config.h"
@@ -8,30 +10,37 @@
 
 using namespace std;
 
+class CJiaGuoMengDlg;
 class Calc
 {
 public:
     Calc();
-    virtual ~Calc();
+	virtual ~Calc();
 
-	multimap<double, unordered_map<string, double> > Start();
+	void Start(const int &nThreadCount, CJiaGuoMengDlg* pDlg);
+	void Stop();
+	//计算完成百分比
+	int GetCalcPercent();
 
 private:
-
     vector<unordered_map<string, Building*> > GetComb(const unordered_map<string, Building*> &mapData);
 
-    void AddAdditionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff);
+    void AddAdditionBuff(const unordered_map<string, Building*> &mapBuilding, const string &sCategory, double dBuff, unordered_map<string, map<string, double> > &mapAdditionBuff);
+    void AddTargetBuff(const string &sTargetId, const unordered_map<string, Building*> &mapBuilding, double dBuff, unordered_map<string, map<string, double> > &mapAdditionBuff);
+    void PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff);
 
-    void ResetAdditionBuff(const unordered_map<string, Building*> &mapBuilding);
+	void CalcThread(const int &nIndex, const int &nCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial);
+    void CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff, multimap<double, unordered_map<string, double> > &mapTotalProfit);
 
-    void AddTargetBuff(const string &sTargetId, const unordered_map<string, Building*> &mapBuilding, double dBuff);
+	void CreateScenes(const int &nThreadCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial);
 
-    void PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding);
+private:
+	bool m_bRun;
+	thread *m_pThread;
+	mutex m_mutex;
+	multimap<double, unordered_map<string, double> > m_mapTotalProfit;
+	int m_nCurCount; //当前次数
+	int m_nTotalCount; //总次数
 
-    void CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, multimap<double, unordered_map<string, double> > &mapTotalProfit);
-
-    void ShowResult(const multimap<double, unordered_map<string, double> > &mapTotalProfit, int topN);
-
-	multimap<double, unordered_map<string, double> > CreateScenes(const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial);
-
+	CJiaGuoMengDlg* m_pDlg;
 };

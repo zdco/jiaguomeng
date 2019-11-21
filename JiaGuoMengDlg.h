@@ -7,7 +7,11 @@
 #include <vector>
 #include <string>
 
+#include "Calc.h"
+
 using namespace std;
+
+#define WM_CALC_FINISH (WM_USER + 1)
 
 // CJiaGuoMengDlg ¶Ô»°¿ò
 class CJiaGuoMengDlg : public CDialogEx
@@ -34,9 +38,11 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg LRESULT OnCalcFinish(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedMwCalc();
 	afx_msg void OnBnClickedGjgfCalc();
 	afx_msg void OnBnClickedPfCalc();
@@ -67,11 +73,17 @@ public:
 	afx_msg void OnBnClickedLjcCalc();
 	afx_msg void OnBnClickedQejxCalc();
 	afx_msg void OnBnClickedRmsyCalc();
+	afx_msg void OnBnClickedMxggCalc();
+	afx_msg void OnBnClickedZmkdCalc();
+	afx_msg void OnBnClickedYygCalc();
+	afx_msg void OnBnClickedQgmyCalc();
 
 	afx_msg void OnBnClickedPolicy();
 	afx_msg void OnBnClickedPhoto();
 	afx_msg void OnBnClickedMission();
 	afx_msg void OnBnClickedStart();
+
+	void HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit);
 
 private:
 	void EnableTextField(int nStarID, int nLevelID, int nCalcID);
@@ -85,9 +97,8 @@ private:
 	void SaveBuildingConfig();
 	void LoadJiaguoConfig();
 	void SaveJiaguoConfig();
-public:
-	afx_msg void OnBnClickedMxggCalc();
-	afx_msg void OnBnClickedZmkdCalc();
-	afx_msg void OnBnClickedYygCalc();
-	afx_msg void OnBnClickedQgmyCalc();
+
+private:
+	Calc m_calc;
+	string m_sCalcResult;
 };
