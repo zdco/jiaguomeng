@@ -295,7 +295,7 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 
 	Config::GetInstance()->Init();
 
-	SetTimer(1, 00, NULL);
+	SetTimer(1, 100, NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -704,17 +704,17 @@ void CJiaGuoMengDlg::SaveJiaguoConfig()
 LRESULT CJiaGuoMengDlg::OnCalcFinish(WPARAM wParam, LPARAM lParam)
 {
 	SetTextField(IDC_RESULT, m_sCalcResult);
-	((CButton*)GetDlgItem(ID_START))->EnableWindow(TRUE);
+	SetTextField(ID_START, "开始计算");
 	return 0;
 }
 
-void CJiaGuoMengDlg::HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit)
+void CJiaGuoMengDlg::HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit, const int &nCost)
 {
 	auto it = mapTotalProfit.rbegin();
 	if (it != mapTotalProfit.rend())
 	{
 		ostringstream os;
-		os << "在线总收入：" << Config::GetInstance()->GetUnit(it->first) << "\r\n";
+		os << "最优在线总收入：" << Config::GetInstance()->GetUnit(it->first) << "，耗时：" << nCost << "毫秒\r\n-----------------------------------------------------------------------------\r\n";
 		map<string, double> mapData;
 		for (auto data_it = it->second.begin(); data_it != it->second.end(); data_it++)
 		{
@@ -737,14 +737,22 @@ void CJiaGuoMengDlg::HandleCalcData(const multimap<double, unordered_map<string,
 
 void CJiaGuoMengDlg::OnBnClickedStart()
 {
-	SaveBuildingConfig();
-	SaveJiaguoConfig();
+	if (GetTextField(ID_START) == "开始计算")
+	{
+		SetTextField(ID_START, "停止");
+		SaveBuildingConfig();
+		SaveJiaguoConfig();
 
-	int nThreadCount = atoi(GetTextField(IDC_THREAD_COUNT).c_str());
-	m_calc.Start(nThreadCount, this);
+		int nThreadCount = atoi(GetTextField(IDC_THREAD_COUNT).c_str());
+		m_calc.Start(nThreadCount, this);
 
-	SetTextField(IDC_RESULT, "");
-	((CButton*)GetDlgItem(ID_START))->EnableWindow(FALSE);
+		SetTextField(IDC_RESULT, "");
+	}
+	else
+	{
+		m_calc.Stop();
+		SetTextField(ID_START, "开始计算");
+	}
 }
 
 void CJiaGuoMengDlg::OnTimer(UINT_PTR nIDEvent)

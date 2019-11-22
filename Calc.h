@@ -39,6 +39,7 @@ private:
 	thread *m_pThread;
 	mutex m_mutex;
 	multimap<double, unordered_map<string, double> > m_mapTotalProfit;
+	unsigned long m_startTime;
 	int m_nCurCount; //当前次数
 	int m_nTotalCount; //总次数
 

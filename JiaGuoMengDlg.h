@@ -83,7 +83,7 @@ public:
 	afx_msg void OnBnClickedMission();
 	afx_msg void OnBnClickedStart();
 
-	void HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit);
+	void HandleCalcData(const multimap<double, unordered_map<string, double> > &mapTotalProfit, const int &nCost);
 
 private:
 	void EnableTextField(int nStarID, int nLevelID, int nCalcID);

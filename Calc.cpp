@@ -9,6 +9,7 @@ Calc::Calc()
 {
 	m_bRun = false;
 	m_pThread = NULL;
+	m_startTime = 0;
 	m_nCurCount = 0;
 	m_nTotalCount = 0;
 }
@@ -194,10 +195,10 @@ void Calc::CreateScenes(const int &nThreadCount, const string& sCategory, const 
 		delete vThread[i];
 	}
 
-	//通知完成
-	if (m_pDlg)
+	//运行结果后，通知完成
+	if (m_bRun && m_pDlg)
 	{
-		m_pDlg->HandleCalcData(m_mapTotalProfit);
+		m_pDlg->HandleCalcData(m_mapTotalProfit, GetTickCount() - m_startTime);
 	}
 }
 
@@ -210,6 +211,7 @@ void Calc::Start(const int &nThreadCount, CJiaGuoMengDlg* pDlg)
 
     Config::GetInstance()->LoadData();
 
+	m_startTime = GetTickCount();
     unordered_map<string, vector<vector<string> > > mapCategoryComb;
     unordered_map<string, Building*> mapResidence =  Config::GetInstance()->GetCategoryBuilding(CategoryResidence);
     unordered_map<string, Building*> mapBusiness =  Config::GetInstance()->GetCategoryBuilding(CategoryBusiness);
@@ -231,6 +233,7 @@ void Calc::Stop()
 		delete m_pThread;
 		m_pThread = NULL;
 	}
+	m_nCurCount = 0;
 }
 
 int Calc::GetCalcPercent()
