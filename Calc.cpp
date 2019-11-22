@@ -110,7 +110,7 @@ void Calc::PrepareBuff(const unordered_map<string, Building*> &mapResidence, con
     }
 }
 
-void Calc::CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff, multimap<double, unordered_map<string, double> > &mapTotalProfit)
+pair<double, unordered_map<string, double> > Calc::CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff)
 {
     unordered_map<string, double> mapBuildingProfit;
     double totalProfit = 0;
@@ -129,14 +129,15 @@ void Calc::CalcProfit(const string &sCategory, const unordered_map<string, Build
         totalProfit += dProfit;
         mapBuildingProfit[it->first] = dProfit;
     }
-	mapTotalProfit.insert(make_pair(totalProfit, mapBuildingProfit));
+	return make_pair(totalProfit, mapBuildingProfit);
 }
 
 void Calc::CalcThread(const int &nIndex, const int &nCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial)
 {
 	int nStartIndex = nIndex * nCount;
 	int nCurIndex = 0;
-	multimap<double, unordered_map<string, double> > mapTotalProfit;
+	double dMaxProfit = 0;
+	unordered_map<string, double> maxProfitBuilding;
 	for (size_t i = 0; i < vResidence.size(); i++)
 	{
 		unordered_map<string, Building*> mapResidence = vResidence[i];
@@ -162,7 +163,12 @@ void Calc::CalcThread(const int &nIndex, const int &nCount, const string& sCateg
 				mapAllBuilding.insert(mapBusiness.begin(), mapBusiness.end());
 				mapAllBuilding.insert(mapIndustrial.begin(), mapIndustrial.end());
 				PrepareBuff(mapResidence, mapBusiness, mapIndustrial, mapAllBuilding, mapAdditionBuff);
-				CalcProfit(sCategory, mapAllBuilding, mapAdditionBuff, mapTotalProfit);
+				pair<double, unordered_map<string, double> > totalProfit = CalcProfit(sCategory, mapAllBuilding, mapAdditionBuff);
+				if (dMaxProfit < totalProfit.first)
+				{
+					dMaxProfit = totalProfit.first;
+					maxProfitBuilding = totalProfit.second;
+				}
 
 				++m_nCurCount;
 			}
@@ -171,7 +177,7 @@ void Calc::CalcThread(const int &nIndex, const int &nCount, const string& sCateg
 
 finish:
 	m_mutex.lock();
-	m_mapTotalProfit.insert(mapTotalProfit.begin(), mapTotalProfit.end());
+	m_mapTotalProfit.insert(make_pair(dMaxProfit, maxProfitBuilding));
 	m_mutex.unlock();
 }
 

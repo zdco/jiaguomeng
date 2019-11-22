@@ -30,7 +30,7 @@ private:
     void PrepareBuff(const unordered_map<string, Building*> &mapResidence, const unordered_map<string, Building*> &mapBusiness, const unordered_map<string, Building*> &mapIndustrial, const unordered_map<string, Building*> &mapAllBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff);
 
 	void CalcThread(const int &nIndex, const int &nCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial);
-    void CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff, multimap<double, unordered_map<string, double> > &mapTotalProfit);
+	pair<double, unordered_map<string, double> > Calc::CalcProfit(const string &sCategory, const unordered_map<string, Building*> &mapBuilding, unordered_map<string, map<string, double> > &mapAdditionBuff);
 
 	void CreateScenes(const int &nThreadCount, const string& sCategory, const vector<unordered_map<string, Building*> > &vResidence, const vector<unordered_map<string, Building*> > &vBusiness, const vector<unordered_map<string, Building*> > &vIndustrial);
 
