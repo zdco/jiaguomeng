@@ -19,6 +19,8 @@
   百度网盘链接：[点击下载](https://pan.baidu.com/s/1fr_aiTISMKuLtoutQzVEQA)
 
   提取码：tdbc
+  
+  若运行时提示xxx.dll找不到，请安装vc_redist.x86组件：[点击下载](https://www.microsoft.com/zh-CN/download/details.aspx?id=48145)
 
 - #### 源代码版：
 
