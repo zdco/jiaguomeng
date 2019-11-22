@@ -201,6 +201,8 @@ void Calc::CreateScenes(const int &nThreadCount, const string& sCategory, const 
 		delete vThread[i];
 	}
 
+	m_nCurCount = m_nTotalCount; //避免出现进度条不到100%的情况
+
 	//运行结果后，通知完成
 	if (m_bRun && m_pDlg)
 	{
