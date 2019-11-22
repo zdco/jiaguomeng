@@ -59,6 +59,7 @@ CJiaGuoMengDlg::CJiaGuoMengDlg(CWnd* pParent /*=NULL*/)
 void CJiaGuoMengDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_CHECK_UPDATE, m_ctrlLink);
 }
 
 BEGIN_MESSAGE_MAP(CJiaGuoMengDlg, CDialogEx)
@@ -140,6 +141,11 @@ BOOL CJiaGuoMengDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	m_ctrlLink.SetUnderLine(false);
+	m_ctrlLink.SetSuperLink(TRUE); //设置控件为超联接控件
+	m_ctrlLink.SetLinkCursor(AfxGetApp()->LoadStandardCursor(IDC_HAND)); // 设置超联接控件的鼠标形状
+	m_ctrlLink.SetLinkAddress(_T("https://github.com/zdco/jiaguomeng"));
+
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN1))->SetRange(1, 5);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN3))->SetRange(1, 5);
 	((CSpinButtonCtrl*)GetDlgItem(IDC_SPIN5))->SetRange(1, 5);

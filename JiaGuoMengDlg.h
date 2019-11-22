@@ -8,6 +8,8 @@
 #include <string>
 
 #include "Calc.h"
+#include "afxwin.h"
+#include "SuperLinkCtrl.h"
 
 using namespace std;
 
@@ -101,4 +103,5 @@ private:
 private:
 	Calc m_calc;
 	string m_sCalcResult;
+	CSuperLinkCtrl m_ctrlLink;
 };
