@@ -5,20 +5,22 @@
   
 ### 当前最新版本：V1.1
 
-##界面截图：
+## 界面截图：
 
 ![](/screenshots/1.png)
-![](/screenshots/2.png)
-![](/screenshots/3.png)
 ![](/screenshots/4.png)
+![](/screenshots/3.png)
+![](/screenshots/2.png)
 
 ## 使用方法：
 
 - #### 发布版：
 
-  百度网盘链接：[点击下载](https://pan.baidu.com/s/1sPVDQbCanId0twzs0vqv4g)
+  百度网盘链接：[点击下载](https://pan.baidu.com/s/1sPVDQbCanId0twzs0vqv4g)  提取码：yzgj
 
-  提取码：yzgj
+  github下载链接：[点击下载](https://github.com/zdco/jiaguomeng/releases/download/v1.1/jiaguomeng.zip)
+
+  下载完成后，先解压zip，然后双击打开JiaGuoMeng.exe
   
   若运行时提示xxx.dll找不到，请安装vc_redist.x86组件：[点击下载](https://www.microsoft.com/zh-CN/download/details.aspx?id=48145)
 
