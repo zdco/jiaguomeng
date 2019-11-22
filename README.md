@@ -1,7 +1,7 @@
 # jiaguomeng
 ### c++版 家国梦建筑最优摆放计算
 
-  C++版本程序比较小，压缩后只有2M，解压后也只有4M，计算速度也是飞快，运行时占用内存也非常小，欢迎体验
+  C++版本程序比较小，压缩后只有2M，解压后也只有4M，计算速度也是飞快，运行时几乎不占用内存，欢迎体验
   
 ### 当前最新版本：V1.1
 
@@ -16,9 +16,9 @@
 
 - #### 发布版：
 
-  百度网盘链接：[点击下载](https://pan.baidu.com/s/1fr_aiTISMKuLtoutQzVEQA)
+  百度网盘链接：[点击下载](https://pan.baidu.com/s/1sPVDQbCanId0twzs0vqv4g)
 
-  提取码：tdbc
+  提取码：yzgj
   
   若运行时提示xxx.dll找不到，请安装vc_redist.x86组件：[点击下载](https://www.microsoft.com/zh-CN/download/details.aspx?id=48145)
 
